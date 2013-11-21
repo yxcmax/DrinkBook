@@ -27,7 +27,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="http://socialdrinkers.web.engr.illinois.edu/p/Project/mainPage/mainPage.php">DrinkBook</a>
+          <a class="navbar-brand" href="../mainPage/mainPage.php">DrinkBook</a>
         </div>
         <div class="navbar-collapse collapse">
           <form class="navbar-form navbar-right">
@@ -103,12 +103,12 @@
         <div class="col-md-4">
           <h2>Mixes</h2>
           <p>Newest mixes of the week</p>
-          <p><a class="btn btn-default" href="http://socialdrinkers.web.engr.illinois.edu/p/Project/mixesPage/mixesPage.php" role="button">View details &raquo;</a></p>
+          <p><a class="btn btn-default" href="../mixesPage/mixesPage.php" role="button">View details &raquo;</a></p>
         </div>
         <div class="col-md-4">
           <h2>About Us</h2>
 		  <p>Our Mission</p>
-          <p><a class="btn btn-default" href="http://socialdrinkers.web.engr.illinois.edu/p/Project/aboutPage/aboutPage.php" role="button">View details &raquo;</a></p>
+          <p><a class="btn btn-default" href="../aboutPage/aboutPage.php" role="button">View details &raquo;</a></p>
        </div>
         <div class="col-md-4">
           <h2>Profile</h2>
@@ -175,7 +175,7 @@
 			$("#searchButton").on("click", function(){
 				var actionType = "searchDrinks";
 				$.ajax({                                      
-				  url: 'http://socialdrinkers.web.engr.illinois.edu/p/Project/fn.php',                  
+				  url: '../fn.php',                  
 				  data: {action: actionType, drink: drinkSearchValue}, 
 				  datatype: 'json',
 				 success: function(data)

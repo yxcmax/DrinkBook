@@ -37,12 +37,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="http://socialdrinkers.web.engr.illinois.edu/p/Project/mainPage/mainPage.php">DrinkBook</a>
+          <a class="navbar-brand" href="../mainPage/mainPage.php">DrinkBook</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li><a href="http://socialdrinkers.web.engr.illinois.edu/p/Project/mixesPage/mixesPage.php">Mixes</a></li>
-			<li class="active"><a href="http://socialdrinkers.web.engr.illinois.edu/p/Project/aboutPage/aboutPage.php">About</a></li>
+            <li><a href="../mixesPage/mixesPage.php">Mixes</a></li>
+			<li class="active"><a href="../aboutPage/aboutPage.php">About</a></li>
             <li><a href="#contact">Profile</a></li>
           </ul>
 		  <form class="navbar-form navbar-right">
