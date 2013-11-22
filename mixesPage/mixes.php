@@ -37,12 +37,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="../mainPage/mainPage.php">DrinkBook</a>
+          <a class="navbar-brand" href="../mainPage/main.php">DrinkBook</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="../mixesPage/mixesPage.php">Mixes</a></li>
-			<li><a href="../aboutPage/aboutPage.php">About</a></li>
+            <li class="active"><a href="../mixesPage/mixes.php">Mixes</a></li>
+			<li><a href="../aboutPage/about.php">About</a></li>
             <li><a href="#contact">Profile</a></li>
           </ul>
           <form class="navbar-form navbar-right">
@@ -146,10 +146,11 @@
 					var r = document.createElement("tr");
 					for(var key in data[i]){
 						var td = document.createElement("td");
-						if(key == "name")
-							$(td).on("click", viewDrink);
-						else if(key == "type")
+						if(key == "name") {
+							$(td).on("click", viewDrink(data[i][key]));
+						} else if(key == "type") {
 							$(td).on("click", viewTag);
+						}
 						td.appendChild(document.createTextNode(data[i][key]));
 						r.appendChild(td);
 					}
@@ -158,8 +159,8 @@
 				d.appendChild(mytable);
 			}
 			
-			function viewDrink() {
-				window.location.assign("../drinkDetailsPage/drinkDetails.php");
+			function viewDrink(drinkName) {
+				window.location.assign("../drinkDetailsPage/drinkDetails.php?drink=" + drinkName);
 			}
 			
 			function viewTag() {
