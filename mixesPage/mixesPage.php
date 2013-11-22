@@ -112,9 +112,12 @@
 				  success: function(data)
 				  {
 				  	//console.log(data);
-					$.each(data, function(index,data) {        
+					/*$.each(data, function(index,data) {        
 					    $('#drinkList').append(data.name+" - "+data.type + "<br>")
-					});
+					});*/
+					//data=JSON.parse(data);
+				  	$('#drinkList').text("");
+				  	totable(data);
 				  },
 				  error: function (xhr, ajaxOptions, thrownError) {
 				        alert(xhr.statusText);
@@ -122,6 +125,46 @@
 				    } 
 			  	});
 		  	}
+			
+			function totable(data){
+				var d = document.getElementById("drinkList");
+				d.setAttribute("class","panel panel-default");
+				var dd = document.createElement("div");
+				dd.setAttribute("class","panel-heading");
+				dd.appendChild(document.createTextNode("Drink list"));
+				d.appendChild(dd);
+				var mytable = document.createElement("table");
+				mytable.setAttribute("class","table");
+				var thr = document.createElement("tr");
+				for(var key in data[0]){
+					var th = document.createElement("th");
+					th.appendChild(document.createTextNode(key));
+					thr.appendChild(th);
+				}
+				mytable.appendChild(thr);
+				for(var i=0;i<data.length;i++){
+					var r = document.createElement("tr");
+					for(var key in data[i]){
+						var td = document.createElement("td");
+						if(key.equals("name"))
+							$(td).on("click", viewDrink);
+						else if(key.equals("type"))
+							$(td).on("click", viewTag);
+						td.appendChild(document.createTextNode(data[i][key]));
+						r.appendChild(td);
+					}
+					mytable.appendChild(r);
+				}
+				d.appendChild(mytable);
+			}
+			
+			function viewDrink() {
+				console.log("click works");
+			}
+			
+			function viewTag() {
+				console.log("click works");
+			}
 		  });
 	</script>
 				  	

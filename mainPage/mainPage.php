@@ -127,8 +127,6 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script>
 	
-	
-		///*
 		function totable(data){
 			var d = document.getElementById("searchResults");
 			d.setAttribute("class","panel panel-default");
@@ -156,15 +154,6 @@
 			}
 			d.appendChild(mytable);
 		}
-		
-	
-		
-		
-		
-		//*/
-	
-	
-	
 	
 		$(document).ready(function(){
 		

@@ -13,7 +13,7 @@
 	}
 
 	function getDrinks() {
-		$con=mysqli_connect_error("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+		$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
 		if (mysqli_connect_errno($con))
 		{
 		   //echo '<script>alert("connection has failed");</script>';
