@@ -146,9 +146,9 @@
 					var r = document.createElement("tr");
 					for(var key in data[i]){
 						var td = document.createElement("td");
-						if(key.equals("name"))
+						if(key == "name")
 							$(td).on("click", viewDrink);
-						else if(key.equals("type"))
+						else if(key == "type")
 							$(td).on("click", viewTag);
 						td.appendChild(document.createTextNode(data[i][key]));
 						r.appendChild(td);
@@ -159,7 +159,7 @@
 			}
 			
 			function viewDrink() {
-				console.log("click works");
+				window.location.assign("../drinkDetailsPage/drinkDetails.php");
 			}
 			
 			function viewTag() {
