@@ -61,77 +61,64 @@
     <div class="container">
 
       <div class="starter-template">
-      <div class="well">
-            <div class="input-group">
-              <input type="text" class="form-control" id="drinkInput" placeholder="Drink Name">
-              <input type="text" class="form-control" id="typeInput" placeholder="Drink Type">
-              <span class="input-group-btn">
-                <button type="submit" id="addDrinkButton" class="btn btn-success">Add a drink!</button>
-              </span>
-       </div>
        
-       <div id="drinkList"></div>
+       <div id="drinkIngredients"></div>
+	   <div id="drinkDescription">
+			<p id = "type">Type: </p>
+			<p id = "directions">Directions: </p>
+	   </div>
             
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script>
 		$(document).ready(function(){
-			loadDrinks();
-		  	
-		  	$("#drinkInput").on("change", function() {
-			   newDrink = this.value;
-			});
+			loadIngredients();
+			loadDescription();
 			
-			$("#typeInput").on("change", function() {
-			   newType = this.value;
-			});
-			
-			$("#addDrinkButton").on("click", function(){
-				var actionType = "addDrink";
-				$.ajax({                                      
-				  url: '../fn.php',                  
-				  data: {action: actionType, drink: newDrink, type: newType}, 
-				  datatype: 'text',                          
-				 success: function(data)
-				  {
-				  	console.log(data);
-					$('#drinkList').text("");
-					loadDrinks();
-				  },
-				  error: function (xhr, ajaxOptions, thrownError) {
-				        alert(xhr.statusText);
-				        //alert(thrownError);
-				    }
-			  	});
-			});
-			
-			function loadDrinks() {
+			function loadIngredients() {
 				 $.ajax({                                      
 				  url: '../fn.php',                  
-				  data: "action=getDrinks",                       
-				  dataType: 'json',     
+				  data: "action=getIngredients&drink=" + getUrlVars()["drink"],
+				  dataType: 'json',
 				  success: function(data)
 				  {
-				  	//console.log(data);
-					/*$.each(data, function(index,data) {        
-					    $('#drinkList').append(data.name+" - "+data.type + "<br>")
-					});*/
+					//console.log(data);
 					//data=JSON.parse(data);
-				  	$('#drinkList').text("");
-				  	totable(data);
+				  	$('#drinkIngredients').text("");
+				  	totable(data, "drinkIngredients");
 				  },
 				  error: function (xhr, ajaxOptions, thrownError) {
-				        alert(xhr.statusText);
+				        //alert(xhr.statusText);
+						console.log("action=getIngredients&drink=" + getUrlVars()["drink"]);
 				        //alert(thrownError);
 				    } 
 			  	});
 		  	}
 			
-			function totable(data){
-				var d = document.getElementById("drinkList");
+			function loadDescription() {
+				$.ajax({                                      
+					url: '../fn.php',                  
+					data: "action=getDescription&drink=" + getUrlVars()["drink"],                       
+					dataType: 'json',     
+					success: function(data)
+					{
+						//data=JSON.parse(data);
+						//console.log("action=getDescription&drink=" + getUrlVars()["drink"]);
+						$('#type').append(data[0]["Type"]);
+						$('#directions').append(data[0]["Directions"]);
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+						alert(xhr.statusText);
+						//alert(thrownError);
+					} 
+				});
+		  	}
+			
+			function totable(data, divToAttach){
+				var d = document.getElementById(divToAttach);
 				d.setAttribute("class","panel panel-default");
 				var dd = document.createElement("div");
 				dd.setAttribute("class","panel-heading");
-				dd.appendChild(document.createTextNode("Drink list"));
+				dd.appendChild(document.createTextNode("Drink Ingredients"));
 				d.appendChild(dd);
 				var mytable = document.createElement("table");
 				mytable.setAttribute("class","table");
@@ -144,18 +131,12 @@
 				mytable.appendChild(thr);
 				for(var i=0;i<data.length;i++){
 					var r = document.createElement("tr");
-					var drinkName = "" + data[i]["Name"];
-					//console.log(data[i]["Name"]);
 					for(var key in data[i]){
 						var td = document.createElement("td");
-						if(key == "Name") {
-							$(td).on("click", { value : drinkName }, function( event ) {
-								viewDrink(event.data.value);
-								
-							});
-						} else if(key == "Type") {
-							$(td).on("click", viewTag);
-						}
+						// if(key == "name")
+							// $(td).on("click", viewDrink);
+						// else if(key == "type")
+							// $(td).on("click", viewTag);
 						td.appendChild(document.createTextNode(data[i][key]));
 						r.appendChild(td);
 					}
@@ -164,9 +145,17 @@
 				d.appendChild(mytable);
 			}
 			
-			function viewDrink(drinkName) {
-				//console.log("../drinkDetailsPage/drinkDetails.php?drink=" + drinkName);
-				window.location.assign("../drinkDetailsPage/drinkDetails.php?drink=" + drinkName);
+			function getUrlVars() {
+				var vars = {};
+				var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
+				function(m,key,value) {
+					vars[key] = value;
+				});
+				return vars;
+			}
+			
+			function viewDrink() {
+				console.log("click works");
 			}
 			
 			function viewTag() {

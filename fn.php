@@ -9,6 +9,13 @@
 		break;
 	case 'searchDrinks':
 		searchDrinks($_GET['drink']);
+		break;
+	case 'getIngredients':
+		getIngredients($_GET['drink']);
+		break;
+	case 'getDescription':
+		getDescription($_GET['drink']);
+		break;
 	default:
 	}
 
@@ -26,13 +33,13 @@
 		   }
 		   echo json_encode($rows);*/
 		   
-		   	$sql =  mysqli_query($con,"SELECT name, type FROM Drink");
+		   	$sql =  mysqli_query($con,"SELECT name as Name, type as Type FROM Drink");
 			$results = array();
 			while($row = mysqli_fetch_array($sql))
 			{
 			   $results[] = array(
-			      'name' => $row['name'],
-			      'type' => $row['type']
+			      'Name' => $row['Name'],
+			      'Type' => $row['Type']
 			   );
 			}
 			echo json_encode($results);
@@ -74,14 +81,52 @@
 		if (mysqli_connect_errno($con))
 		{
 		   //echo '<script>alert("connection has failed");</script>';
-		}else{ 
-		   	$sql =  mysqli_query($con,"SELECT name, type FROM Drink WHERE name LIKE '%" . $drink . "%'");
+		} else { 
+		   	$sql =  mysqli_query($con,"SELECT name as Name, type as Type FROM Drink WHERE name LIKE '%" . $drink . "%'");
 			$results = array();
 			while($row = mysqli_fetch_array($sql))
 			{
 			   $results[] = array(
-			      'name' => $row['name'],
-			      'type' => $row['type']
+			      'Name' => $row['Name'],
+			      'Type' => $row['Type']
+			   );
+			}
+			echo json_encode($results);
+		}
+	}
+	
+	function getIngredients($drink) {
+		$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+		if (mysqli_connect_errno($con))
+		{
+		   echo '<script>alert("connection has failed");</script>';
+		} else { 
+		   	$sql =  mysqli_query($con,"SELECT ingredientName as Ingredient, quantity as Quantity FROM Ingredient WHERE drinkName =  '" . $drink . "'");
+			$results = array();
+			while($row = mysqli_fetch_array($sql))
+			{
+			   $results[] = array(
+			      'Ingredient' => $row['Ingredient'],
+			      'Quantity' => $row['Quantity']
+			   );
+			}
+			echo json_encode($results);
+		}
+	}
+	
+	function getDescription($drink) {
+		$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+		if (mysqli_connect_errno($con))
+		{
+		   //echo '<script>alert("connection has failed");</script>';
+		} else {
+		   	$sql =  mysqli_query($con,"SELECT type as Type, directions as Directions FROM Drink WHERE name =  '" . urldecode($drink) . "'");
+			$results = array();
+			while($row = mysqli_fetch_array($sql))
+			{
+			   $results[] = array(
+			      'Type' => $row['Type'],
+			      'Directions' => $row['Directions']
 			   );
 			}
 			echo json_encode($results);
