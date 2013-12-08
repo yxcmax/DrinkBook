@@ -7,6 +7,9 @@
 	case 'addDrink':
 		addDrink($_GET['drink'], $_GET['type']);
 		break;
+	case 'addIngredients':
+		addIngredients($_GET['drink'], $_REQUEST['ingredients'], $_REQUEST['quantities']);
+		break;
 	case 'searchDrinks':
 		searchDrinks($_GET['drink']);
 		break;
@@ -54,25 +57,48 @@
 		   //echo '<script>alert("connection has failed");</script>';
 		}else{
 		   //echo '<script>alert("successful");</script>';
-		   
-	   	$result= mysqli_query($con,"INSERT INTO Drink VALUES ('" . $drink . "','" . $type . "', 'Blend')");
-	   	
-	   	if ( false===$result ) {
-		  //echo mysqli_error($con);
-		  echo "INSERT INTO Drink VALUES ('" . $drink . "','" . $type . "', 'Blend')";
+			//echo "INSERT INTO Drink VALUES ('" . $drink . "','','" . $type . "','','";
+			$result= mysqli_query($con,"INSERT INTO Drink VALUES ('" . $drink . "','','" . $type . "','','')");
+			
+			if ( false===$result ) {
+			  //echo mysqli_error($con);
+			  //echo "INSERT INTO Drink VALUES ('" . $drink . "','" . $type . "', 'Blend')";
+			}
+			else {
+			  echo 'sucess';
+			}
+			/*$results = array();
+			while($row = mysqli_fetch_array($sql))
+			{
+			   $results[] = array(
+				  'name' => $row['name'],
+				  'type' => $row['type']
+			   );
+			}
+			echo json_encode($results);*/
 		}
-		else {
-		  echo 'sucess';
-		}
-		/*$results = array();
-		while($row = mysqli_fetch_array($sql))
+	}
+	
+	function addIngredients($drink, $ingrArray, $quantArray) {
+		$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+		if (mysqli_connect_errno($con))
 		{
-		   $results[] = array(
-		      'name' => $row['name'],
-		      'type' => $row['type']
-		   );
-		}
-		echo json_encode($results);*/
+			echo "fail";
+		   //echo '<script>alert("connection has failed");</script>';
+		}else{
+		   //echo '<script>alert("successful");</script>';
+		   
+			for($i = 0, $size = count($ingrArray); $i < $size; $i++) {
+				echo "INSERT INTO Ingredient VALUES ('" . $drink . "','" . $ingrArray[$i] . "','" . $quantArray[$i] . "')";
+				$result= mysqli_query($con,"INSERT INTO Ingredient VALUES ('" . $drink . "','" . $ingrArray[$i] . "','" . $quantArray[$i] . "')");
+			}
+			if ( false===$result ) {
+			  //echo mysqli_error($con);
+			  echo "INSERT INTO Drink VALUES ('" . $drink . "','" . $type . "', 'Blend')";
+			}
+			else {
+			  echo 'sucess';
+			}
 		}
 	}
 	
