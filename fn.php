@@ -117,14 +117,15 @@
 		{
 		   //echo '<script>alert("connection has failed");</script>';
 		} else { 
-		   	$sql =  mysqli_query($con,"SELECT name as Name, type as Type FROM Drink WHERE name LIKE '%" . $drink . "%'");
+		   	$sql =  mysqli_query($con,"SELECT * FROM Drink WHERE name LIKE '%" . $drink . "%'");
+		   	if (!$sql) {
+			    printf("Error: %s\n", mysqli_error($con));
+			    exit();
+			}
 			$results = array();
-			while($row = mysqli_fetch_array($sql))
+			while($row = mysqli_fetch_assoc($sql))
 			{
-			   $results[] = array(
-			      'Name' => $row['Name'],
-			      'Type' => $row['Type']
-			   );
+			   $results[] = $row;
 			}
 			echo json_encode($results);
 		}

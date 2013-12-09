@@ -5,7 +5,7 @@
     $expire = time()-60*60*24;
     setcookie('userID', " ", $expire, '/');
     unset($_COOKIE['userID']);
-    header('Location: main.php');
+    header('Location: '.htmlspecialchars($_SERVER["PHP_SELF"]));
     exit();
   }
 
@@ -21,14 +21,17 @@
     echo mysqli_error($con);
     if (mysqli_num_rows($result) >0)
     { // correct info
+      $UID;
       while($row = mysqli_fetch_assoc($result))
       {//cookie implementation
         $expire = time() + 60*60*24; //1 day
         setcookie('userID', $row['userID'], $expire, '/');
+        //$UID=$row['idNum'];
         //$userID = $row['userID'];
-        header('Location: main.php');
+        header('Location: '.htmlspecialchars($_SERVER["PHP_SELF"]));
         exit();
       }
+
     }
     else{ // wrong info
       echo '<script>
@@ -43,6 +46,25 @@
   if(isset($_COOKIE['userID'])) 
   {
     $userID = $_COOKIE['userID'];
+    $con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+    $profile = mysqli_query($con, "select * from Profile inner join Drinker on Profile.UID = Drinker.idNum where Drinker.userID = '$userID'");
+    echo mysqli_error($con);
+    $name;
+    $email;
+    while($newrow = mysqli_fetch_assoc($profile)){
+      $name=$newrow['Name'];
+      $email=$newrow['Email'];
+    }
+    $qhist = mysqli_query($con, "select date, drinkName, quantity from History where userID='$userID' order by date");
+    $hist = array();
+    while($row = mysqli_fetch_assoc($qhist)){
+      $hist[]=$row;
+    }
+    $rate = array();
+    $qrate = mysqli_query($con, "select drinkName, rating from Rating where userID='$userID' order by rating DESC");
+    while($row = mysqli_fetch_assoc($qrate)){
+      $rate[]=$row;
+    }
   }
 ?>
 <!-- The login implementation -->
@@ -58,11 +80,12 @@
     <title>DrinkBook</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="bootstrap.css" rel="stylesheet">
+    <link href="../mainPage/bootstrap.css" rel="stylesheet">
 
     <!-- Add custom CSS here -->
-    <link href="modern-business.css" rel="stylesheet">
-    <link href="font-awesome.min.css" rel="stylesheet">
+    <link href="../mainPage/modern-business.css" rel="stylesheet">
+    <link href="../mainPage/font-awesome.min.css" rel="stylesheet">
+
   </head>
 
   <body>
@@ -76,7 +99,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="../mainPage/main.php">DrinkBook</a>
+          <a class="navbar-brand" href="../mainPage/main.php">DrinkBook - Profile</a>
         </div>
         <div class="navbar-collapse collapse">
           <?php
@@ -102,51 +125,40 @@
         </div><!--/.navbar-collapse -->
       </div>
     </div>
-	
-    <div id="myCarousel" class="carousel slide">
-      <!-- Indicators -->
-        <ol class="carousel-indicators">
-          <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-          <li data-target="#myCarousel" data-slide-to="1"></li>
-          <li data-target="#myCarousel" data-slide-to="2"></li>
-        </ol>
 
-        <!-- Wrapper for slides -->
-        <div class="carousel-inner">
-          <div class="item active">
-            <div class="fill" style="background-image:url('http://fwallpapers.com/files/images/flaming-drinks.jpg');"></div>
-            <div class="carousel-caption">
-              <h1>Creatively Thirsty</h1>
-            </div>
-          </div>
-          <div class="item">
-            <div class="fill" style="background-image:url('http://www.allaboutbarsinfo.com/wp-content/uploads/2011/02/3-fancy-drinks.jpg');"></div>
-            <div class="carousel-caption">
-              <h1>Creatively Thirsty</h1>
-            </div>
-          </div>
-          <div class="item">
-            <div class="fill" style="background-image:url('http://thumbs.ifood.tv/files/images/editor/images/Shaken_Not_Stirred_V2_0.jpg');"></div>
-            <div class="carousel-caption">
-              <h1>Creatively Thirsty</h1>
-            </div>
-          </div>
-        </div>
+	<div class="container" style="padding-top:10px;">
 
-        <!-- Controls -->
-        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-          <span class="icon-prev"></span>
-        </a>
-        <a class="right carousel-control" href="#myCarousel" data-slide="next">
-          <span class="icon-next"></span>
-        </a>
-    </div>
-
-	<div class="container">
-
- 
           <div class="well">
-            <h4>Lets Get Weird!</h4>
+            <h2>Profile<?php if(isset($userID)){
+              echo ' - '.$userID;
+            }
+            ?></h2>
+            <?php if(!isset($userID)) echo '<p>You are not signed in. Click <a href="../signUp">here</a> to get an account in 30 seconds and start the drinking experience you never had!</p>'?>
+
+            <?php
+              if(isset($userID)){
+                echo '<a type="button" class="btn btn-primary" href="edit.php">Edit</a><br>
+                      <label style="padding-top: 5px;">Name: </label><p>'.$name.'</p>
+                      <label>Email: </label><p>'.$email.'</p>
+                      <label>Drink History</label>
+                      <div id="myhistory"></div>
+                      <div id="histpager"></div>
+                      <label>My Ratings</label>
+                      <div id="myrating"></div>
+                      ';
+              }
+              //print_r($hist);
+              //print_r($rate);
+            ?>
+
+          </div>
+
+
+          <!-- <button type="button" class="btn btn-default" onclick="alert('tell me')" -->
+
+
+
+
             <div class="input-group">
               <input type="text" class="form-control" id="searchInput" placeholder="Search for a drink">
               <span class="input-group-btn">
@@ -173,9 +185,9 @@
         <div class="col-md-4">
           <h2>Profile</h2>
           <p>About you</p>
-          <p><a class="btn btn-default" href="/profile" role="button">View details &raquo;</a></p>
+          <p><a class="btn btn-default" href="date.php" role="button">View details &raquo;</a></p>
         </div>
-      </div>
+      <!-- </div> -->
 
       <hr>
 
@@ -187,36 +199,37 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script>
 	
-		function totable(data){
-			var d = document.getElementById("searchResults");
-			d.setAttribute("class","panel panel-default");
-			var dd = document.createElement("div");
-			dd.setAttribute("class","panel-heading");
-			dd.appendChild(document.createTextNode("Search results"));
-			d.appendChild(dd);
+		function totable(data,target){
+			var table_container = document.getElementById(target);
+      table_container.innerHTML="";
+			table_container.setAttribute("class","panel panel-default");
+			var table_heading = document.createElement("div");
+			table_heading.setAttribute("class","panel-heading");
+			table_heading.appendChild(document.createTextNode("Search results"));
+			table_container.appendChild(table_heading);
 			var mytable = document.createElement("table");
 			mytable.setAttribute("class","table");
       var thead = document.createElement("thead");
       var tbody = document.createElement("tbody");
       mytable.appendChild(thead);
       mytable.appendChild(tbody);
-			var thr = document.createElement("tr");
+			var t_header_row = document.createElement("tr");
 			for(var key in data[0]){
 				var th = document.createElement("th");
 				th.appendChild(document.createTextNode(key));
-				thr.appendChild(th);
+				t_header_row.appendChild(th);
 			}
-			thead.appendChild(thr);
+			thead.appendChild(t_header_row);
 			for(var i=0;i<data.length;i++){
-				var r = document.createElement("tr");
+				var t_body_row = document.createElement("tr");
 				for(var key in data[i]){
 					var td = document.createElement("td");
 					td.appendChild(document.createTextNode(data[i][key]));
-					r.appendChild(td);
+					t_body_row.appendChild(td);
 				}
-				tbody.appendChild(r);
+				tbody.appendChild(t_body_row);
 			}
-			d.appendChild(mytable);
+			table_container.appendChild(mytable);
 		}
 	
 		$(document).ready(function(){
@@ -237,7 +250,7 @@
 				  	console.log(data);
 				  	data=JSON.parse(data);
 				  	$('#searchResults').text("");
-				  	totable(data);
+				  	totable(data,"searchResults");
 				  	/*
 				  	//$('#searchResults').append(data[0].name + " - " + data[0].type);
 				  	$.each(data, function(index,data) {        
@@ -259,8 +272,22 @@
 
     <!-- Bootstrap core JavaScript -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery.js"></script>
-    <script src="bootstrap.js"></script>
-    <script src="modern-business.js"></script>
+    <script src="../mainPage/jquery.js"></script>
+    <script src="../mainPage/bootstrap.js"></script>
+    <script src="../mainPage/modern-business.js"></script>
+
+
+
+    <script type="text/javascript">
+      var dhist = <?php echo json_encode($hist);?>;
+      var rating= <?php echo json_encode($rate);?>;
+      $( document ).ready(function() {
+        //alert("haha");
+        totable(dhist,"myhistory");
+        totable(rating,"myrating");
+        //Pagination
+        $('#histpager').html('<div class="btn-group"><button type="button" class="btn btn-default" onclick="totable(dhist.slice(0,2),&#39;myhistory&#39);">1</button><button type="button" class="btn btn-default">2</button></div>');
+      });
+    </script>
   </body>
 </html>
