@@ -213,12 +213,14 @@
 		} else {
 			echo $favStat . "\n";
 			if($favStat == "true") { // true meaning is already a favorite, so remove as a favorite
-				echo "DELETE FROM Favorite WHERE userID= '" . $user . "' and drinkName='" . urldecode($drink) . "'";
+				echo "DELETE FROM Favorite WHERE userID= '" . $user . "' and drinkName='" . urldecode($drink) . "'\n";
 				$result =  mysqli_query($con,"DELETE FROM Favorite WHERE userID= '" . $drink . "' and drinkName='" . urldecode($drink) . "'");
 			} else { //add as a favorite
-				echo "INSERT INTO Favorite VALUES ('','" . $user . "','" . urldecode($drink) . "')";
+				echo "INSERT INTO Favorite VALUES ('','" . $user . "','" . urldecode($drink) . "')\n";
 				$result =  mysqli_query($con,"INSERT INTO Favorite VALUES ('','" . $user . "','" . urldecode($drink) . "')");
 			}
+			
+			echo $result;
 			
 			if ( false===$result ) {
 			  echo mysqli_error($con);
