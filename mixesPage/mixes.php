@@ -201,7 +201,6 @@
 						if(key == "Name") {
 							$(td).on("click", { value : drinkName }, function( event ) {
 								viewDrink(event.data.value);
-								
 							});
 						} else if(key == "Type") {
 							$(td).on("click", viewTag);
@@ -216,7 +215,7 @@
 			
 			function viewDrink(drinkName) {
 				//console.log("../drinkDetailsPage/drinkDetails.php?drink=" + drinkName);
-				window.location.assign("../drinkDetailsPage/drinkDetails.php?drink=" + drinkName);
+				window.location.assign("../drinkDetailsPage/drinkDetails.php?drink=" + encodeURIComponent(drinkName));
 			}
 			
 			function viewTag() {

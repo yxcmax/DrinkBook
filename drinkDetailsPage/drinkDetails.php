@@ -67,12 +67,21 @@
 			<p id = "type">Type: </p>
 			<p id = "directions">Directions: </p>
 	   </div>
+	   <button type="button" id="favoriteButton" class="btn btn-default btn-lg">
+		  <span id="favoriteIcon" class="glyphicon glyphicon-heart-empty"></span> Favorite
+		</button>
             
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script>
 		$(document).ready(function(){
 			loadIngredients();
-			loadDescription();
+			//loadDescription();
+			checkFavorite();
+			isDrinkFavorite = false;
+			
+			$("#favoriteButton").on("click", function() {
+				favoriteDrink();
+			});
 			
 			function loadIngredients() {
 				 $.ajax({                                      
@@ -112,6 +121,55 @@
 					} 
 				});
 		  	}
+			
+			function favoriteDrink() {
+				var d = document.getElementById("favoriteIcon");
+				if(isDrinkFavorite) {
+					d.className = "glyphicon glyphicon-heart-empty";
+					updateFavorite();
+					isDrinkFavorite = false;
+				} else {
+					d.className = "glyphicon glyphicon-heart";
+					updateFavorite();
+					isDrinkFavorite = true;
+				}
+			}
+			
+			function checkFavorite() {
+				$.ajax({                                      
+					url: '../fn.php',                  
+					data: "action=isFavorite&user=oliver&drink=" + encodeURIComponent(getUrlVars()["drink"]),                       
+					dataType: 'text',     
+					success: function(data)
+					{
+						if(data === "a favorite") {
+							var d = document.getElementById("favoriteIcon");
+							d.className = "glyphicon glyphicon-heart";
+							isDrinkFavorite = true;
+						}
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+						alert(xhr.statusText);
+						//alert(thrownError);
+					} 
+				});
+			}
+			
+			function updateFavorite() {
+				$.ajax({                                      
+					url: '../fn.php',                  
+					data: "action=updateFavorite&user=oliver&drink=" + encodeURIComponent(getUrlVars()["drink"]) + "&favStat=" + isDrinkFavorite,                       
+					dataType: 'text',     
+					success: function(data)
+					{
+						
+					},
+					error: function (xhr, ajaxOptions, thrownError) {
+						alert(xhr.statusText);
+						//alert(thrownError);
+					} 
+				});
+			}
 			
 			function totable(data, divToAttach){
 				var d = document.getElementById(divToAttach);
