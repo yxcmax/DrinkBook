@@ -62,11 +62,14 @@
 
       <div class="starter-template">
       <div class="well">
-            <div class="input-group">
-              <input type="text" class="form-control" id="drinkInput" placeholder="Drink Name">
-              <input type="text" class="form-control" id="typeInput" placeholder="Drink Type">
+            <div id="drinkInputGroup" class="input-group">
+              <input type="text" class="form-control" id="drinkInput" placeholder="Drink Name"></input>
+              <input type="text" class="form-control" id="typeInput" placeholder="Drink Type"></input>
+			  <input type="text" class="ingredientInput" placeholder="Ingredient name"></input>
+			  <input type="text" class="quantityInput" placeholder="Ingredient quantity"></input>
               <span class="input-group-btn">
                 <button type="submit" id="addDrinkButton" class="btn btn-success">Add a drink!</button>
+				<button type="submit" id="addIngredientButton" class="btn btn-success">Add an Ingredient!</button>
               </span>
        </div>
        
@@ -78,14 +81,61 @@
 			loadDrinks();
 		  	
 		  	$("#drinkInput").on("change", function() {
-			   newDrink = this.value;
+				newDrink = $(this).val();
 			});
 			
 			$("#typeInput").on("change", function() {
-			   newType = this.value;
+				newType = $(this).val();
 			});
 			
+			$("#addIngredientButton").on("click", function() {
+				var d = document.getElementById("drinkInputGroup");
+				console.log("hi");
+				var button1 = document.createElement("input");
+				var button2 = document.createElement("input");
+				button1.placeholder = "Ingredient name";
+				button1.className = "ingredientInput";
+				button2.placeholder = "Ingredient quantity";
+				button2.className = "quantityInput";
+				d.appendChild(button1);
+				d.appendChild(button2);
+			});
+			
+			
 			$("#addDrinkButton").on("click", function(){
+				submitIngr();
+				submitDrink();
+			});
+			
+			function submitIngr() {
+				var ingredientArray = new Array(10);
+				var quantityArray = new Array(10);
+				$('.ingredientInput').each(function(i, obj) {
+					//console.log($(this).val());
+					ingredientArray[i] = $(this).val();
+				});
+				$('.quantityInput').each(function(i, obj) {
+					quantityArray[i] = $(this).val();
+				});
+				var actionType = "addIngredients";
+				$.ajax({                                      
+				  url: '../fn.php',                  
+				  data: {action: actionType, drink: newDrink, ingredients: ingredientArray, quantities: quantityArray}, 
+				  datatype: 'text',                          
+				 success: function(data)
+				  {
+				  	console.log(data);
+					//$('#drinkList').text("");
+					//loadDrinks();
+				  },
+				  error: function (xhr, ajaxOptions, thrownError) {
+				        alert(xhr.statusText);
+				        //alert(thrownError);
+				    }
+			  	});
+			}
+			
+			function submitDrink() {
 				var actionType = "addDrink";
 				$.ajax({                                      
 				  url: '../fn.php',                  
@@ -102,7 +152,7 @@
 				        //alert(thrownError);
 				    }
 			  	});
-			});
+			}
 			
 			function loadDrinks() {
 				 $.ajax({                                      
@@ -151,7 +201,6 @@
 						if(key == "Name") {
 							$(td).on("click", { value : drinkName }, function( event ) {
 								viewDrink(event.data.value);
-								
 							});
 						} else if(key == "Type") {
 							$(td).on("click", viewTag);
@@ -166,7 +215,7 @@
 			
 			function viewDrink(drinkName) {
 				//console.log("../drinkDetailsPage/drinkDetails.php?drink=" + drinkName);
-				window.location.assign("../drinkDetailsPage/drinkDetails.php?drink=" + drinkName);
+				window.location.assign("../drinkDetailsPage/drinkDetails.php?drink=" + encodeURIComponent(drinkName));
 			}
 			
 			function viewTag() {

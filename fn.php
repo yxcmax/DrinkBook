@@ -7,14 +7,26 @@
 	case 'addDrink':
 		addDrink($_GET['drink'], $_GET['type']);
 		break;
-	case 'searchDrinks':
-		searchDrinks($_GET['drink']);
+	case 'addIngredients':
+		addIngredients($_GET['drink'], $_REQUEST['ingredients'], $_REQUEST['quantities']);
+		break;
+	case 'addFavorite':
+		addFavorite($_GET['drink']);
+		break;
+	case 'searchDrinksIngr':
+		searchDrinksByIngredients($_GET['drink']);
 		break;
 	case 'getIngredients':
 		getIngredients($_GET['drink']);
 		break;
 	case 'getDescription':
 		getDescription($_GET['drink']);
+		break;
+	case 'isFavorite':
+		isFavorite($_GET['user'], $_GET['drink']);
+		break;
+	case 'updateFavorite':
+		updateFavorite($_GET['user'], $_GET['drink'], $_GET['favStat']);
 		break;
 	default:
 	}
@@ -54,25 +66,48 @@
 		   //echo '<script>alert("connection has failed");</script>';
 		}else{
 		   //echo '<script>alert("successful");</script>';
-		   
-	   	$result= mysqli_query($con,"INSERT INTO Drink VALUES ('" . $drink . "','" . $type . "', 'Blend')");
-	   	
-	   	if ( false===$result ) {
-		  //echo mysqli_error($con);
-		  echo "INSERT INTO Drink VALUES ('" . $drink . "','" . $type . "', 'Blend')";
+			//echo "INSERT INTO Drink VALUES ('" . $drink . "','','" . $type . "','','";
+			$result= mysqli_query($con,"INSERT INTO Drink VALUES ('" . $drink . "','','" . $type . "','','')");
+			
+			if ( false===$result ) {
+			  //echo mysqli_error($con);
+			  //echo "INSERT INTO Drink VALUES ('" . $drink . "','" . $type . "', 'Blend')";
+			}
+			else {
+			  echo 'sucess';
+			}
+			/*$results = array();
+			while($row = mysqli_fetch_array($sql))
+			{
+			   $results[] = array(
+				  'name' => $row['name'],
+				  'type' => $row['type']
+			   );
+			}
+			echo json_encode($results);*/
 		}
-		else {
-		  echo 'sucess';
-		}
-		/*$results = array();
-		while($row = mysqli_fetch_array($sql))
+	}
+	
+	function addIngredients($drink, $ingrArray, $quantArray) {
+		$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+		if (mysqli_connect_errno($con))
 		{
-		   $results[] = array(
-		      'name' => $row['name'],
-		      'type' => $row['type']
-		   );
-		}
-		echo json_encode($results);*/
+			echo "fail";
+		   //echo '<script>alert("connection has failed");</script>';
+		}else{
+		   //echo '<script>alert("successful");</script>';
+		   
+			for($i = 0, $size = count($ingrArray); $i < $size; $i++) {
+				echo "INSERT INTO Ingredient VALUES ('" . $drink . "','" . $ingrArray[$i] . "','" . $quantArray[$i] . "')";
+				$result= mysqli_query($con,"INSERT INTO Ingredient VALUES ('" . $drink . "','" . $ingrArray[$i] . "','" . $quantArray[$i] . "')");
+			}
+			if ( false===$result ) {
+			  //echo mysqli_error($con);
+			  echo "INSERT INTO Drink VALUES ('" . $drink . "','" . $type . "', 'Blend')";
+			}
+			else {
+			  echo 'success';
+			}
 		}
 	}
 	
@@ -91,6 +126,25 @@
 			while($row = mysqli_fetch_assoc($sql))
 			{
 			   $results[] = $row;
+			}
+			echo json_encode($results);
+		}
+	}
+	
+	function searchDrinksByIngredients($ingr) {
+		$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+		if (mysqli_connect_errno($con))
+		{
+		   //echo '<script>alert("connection has failed");</script>';
+		} else { 
+		   	$sql =  mysqli_query($con,"select name, type from Drink inner join Ingredient on Drink.name=Ingredient.drinkName where Ingredient.ingredientName LIKE '%" . $ingr . "%'");
+			$results = array();
+			while($row = mysqli_fetch_array($sql))
+			{
+			   $results[] = array(
+			      'Name' => $row['Name'],
+			      'Type' => $row['Type']
+			   );
 			}
 			echo json_encode($results);
 		}
@@ -121,6 +175,7 @@
 		{
 		   //echo '<script>alert("connection has failed");</script>';
 		} else {
+			echo "SELECT type as Type, directions as Directions FROM Drink WHERE name =  '" . urldecode($drink) . "'";
 		   	$sql =  mysqli_query($con,"SELECT type as Type, directions as Directions FROM Drink WHERE name =  '" . urldecode($drink) . "'");
 			$results = array();
 			while($row = mysqli_fetch_array($sql))
@@ -131,5 +186,45 @@
 			   );
 			}
 			echo json_encode($results);
+		}
+	}
+	
+	function isFavorite($user, $drink) {
+		$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+		if (mysqli_connect_errno($con))
+		{
+		   //echo '<script>alert("connection has failed");</script>';
+		} else {
+			//echo "SELECT * from Favorite where userID = '" . $user . "' and drinkName = '" . urldecode($drink) . "'\n";
+		   	$sql =  mysqli_query($con,"SELECT * from Favorite where userID = '" . $user . "' and drinkName = '" . urldecode($drink) . "'");
+			//echo $sql;
+			if( mysqli_num_rows($sql) != 0)
+				echo "a favorite";
+			else
+				echo "not a favorite";
+		}
+	}
+	
+	function updateFavorite($user, $drink, $favStat) {
+				$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+		if (mysqli_connect_errno($con))
+		{
+		   //echo '<script>alert("connection has failed");</script>';
+		} else {
+			echo $favStat . "\n";
+			if($favStat == "true") { // true meaning is already a favorite, so remove as a favorite
+				echo "DELETE FROM Favorite WHERE userID= '" . $user . "' and drinkName='" . urldecode($drink) . "'";
+				$result =  mysqli_query($con,"DELETE FROM Favorite WHERE userID= '" . $drink . "' and drinkName='" . urldecode($drink) . "'");
+			} else { //add as a favorite
+				echo "INSERT INTO Favorite VALUES ('','" . $user . "','" . urldecode($drink) . "')";
+				$result =  mysqli_query($con,"INSERT INTO Favorite VALUES ('','" . $user . "','" . urldecode($drink) . "')");
+			}
+			
+			if ( false===$result ) {
+			  echo mysqli_error($con);
+			}
+			else {
+			  echo 'success';
+			}
 		}
 	}
