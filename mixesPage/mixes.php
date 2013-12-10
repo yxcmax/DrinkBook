@@ -1,3 +1,52 @@
+<!-- The login implementation -->
+<?php
+  if(isset($_GET['logout'])) 
+  {
+    $expire = time()-60*60*24;
+    setcookie('userID', " ", $expire, '/');
+    unset($_COOKIE['userID']);
+    header('Location: main.php');
+    exit();
+  }
+
+  if(isset($_POST['user']))
+  {
+    //variable declaration 
+    $user = $_POST['user'];
+    $pass = $_POST['pass'];
+    //connect to data base 
+    $con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+    
+    $result = mysqli_query($con, "SELECT * FROM `Drinker` where `userID` = '$user' AND `password` = '$pass'");
+    echo mysqli_error($con);
+    if (mysqli_num_rows($result) >0)
+    { // correct info
+      while($row = mysqli_fetch_assoc($result))
+      {//cookie implementation
+        $expire = time() + 60*60*24; //1 day
+        setcookie('userID', $row['userID'], $expire, '/');
+        //$userID = $row['userID'];
+        header('Location: main.php');
+        exit();
+      }
+    }
+    else{ // wrong info
+      echo '<script>
+              alert("Your user name and password did not match, please try again.");
+              window.location.assign("main.php");
+            </script>';
+      //header('Location: main.php');
+      //exit();
+    }
+  }
+
+  if(isset($_COOKIE['userID'])) 
+  {
+    $userID = $_COOKIE['userID'];
+  }
+?>
+<!-- The login implementation -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -46,14 +95,34 @@
             <li><a href="#contact">Profile</a></li>
           </ul>
           <form class="navbar-form navbar-right">
-            <div class="form-group">
+            <!--<div class="form-group">
               <input type="text" placeholder="Email" class="form-control">
             </div>
             <div class="form-group">
               <input type="password" placeholder="Password" class="form-control">
             </div>
 			<button type="submit" class="btn btn-success">Drink!</button>
-          </form>
+          </form>-->
+		  <?php
+            if(!isset($userID)){
+              echo '
+              <form class="navbar-form navbar-right" method="post" action="'.htmlspecialchars($_SERVER["PHP_SELF"]).'">
+                <div class="form-group">
+                  <input type="text" placeholder="username" class="form-control" name="user">
+                </div>
+                <div class="form-group">
+                  <input type="password" placeholder="Password" class="form-control" name="pass">
+                </div>
+                <button type="submit" class="btn btn-success">DRINK!</button>
+                <a type="button" class="btn btn-primary" href="../signUp">Signup</a>
+              </form>
+              ';
+            }else{
+              echo '
+              <p class="navbar-text navbar-right">Signed in as '.$userID.', <a href="?logout" class="navbar-link"><b>click here to logout</b></a>.</p>
+              ';
+            }
+          ?>
         </div><!--/.nav-collapse -->
       </div>
     </div>

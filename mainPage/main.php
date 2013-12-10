@@ -174,7 +174,7 @@
         <div class="col-md-4">
           <h2>Profile</h2>
           <p>About you</p>
-          <p><a class="btn btn-default" href="/profile" role="button">View details &raquo;</a></p>
+          <p><a class="btn btn-default" href="../profile" role="button">View details &raquo;</a></p>
         </div>
       </div>
 
