@@ -92,10 +92,10 @@
           <ul class="nav navbar-nav">
             <li class="active"><a href="../mixesPage/mixes.php">Mixes</a></li>
 			<li><a href="../aboutPage/about.php">About</a></li>
-            <li><a href="../profile">Profile</a></li>
+            <li><a href="#contact">Profile</a></li>
           </ul>
-          <!--<form class="navbar-form navbar-right">
-            <div class="form-group">
+          <form class="navbar-form navbar-right">
+            <!--<div class="form-group">
               <input type="text" placeholder="Email" class="form-control">
             </div>
             <div class="form-group">
@@ -129,123 +129,144 @@
 
     <div class="container">
 
-      <div class="starter-template">
-       
-       <div id="drinkIngredients"></div>
-	   <div id="drinkDescription">
-			<p id = "type">Type: </p>
-			<p id = "directions">Directions: </p>
-	   </div>
-	   <button type="button" id="favoriteButton" class="btn btn-default btn-lg">
-		  <span id="favoriteIcon" class="glyphicon glyphicon-heart-empty"></span> Favorite
-		</button>
+	<div class="starter-template">
+	<div class="well">
+		<div id="drinkInputGroup" class="input-group">
+			<input type="text" class="form-control" id="drinkInput" placeholder="Drink Name"></input>
+			<!--<input type="text" class="form-control" id="typeInput" placeholder="Drink Type"></input>-->
+			<select id="selectbasic" name="selectbasic" class="selectpicker">
+				<option>Drink type select..</option>
+				<option>Vodka</option>
+				<option>Whisky</option>
+				<option>Rum</option>
+				<option>Gin</option>
+				<option>Tequila</option>
+				<option>Beer</option>
+				<option>Wine</option>
+				<option>Misc</option>
+			</select>
+			<input type="text" class="ingredientInput" placeholder="Ingredient name"></input>
+			<input type="text" class="quantityInput" placeholder="Ingredient quantity"></input>
+			<span class="input-group-btn">
+				<button type="submit" id="addDrinkButton" class="btn btn-success">Add a drink!</button>
+				<button type="submit" id="addIngredientButton" class="btn btn-success">Add an Ingredient!</button>
+			</span>
+		</div>
+
+	<div id="drinkList"></div>
             
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script>
 		$(document).ready(function(){
-			loadIngredients();
-			//loadDescription();
-			checkFavorite();
-			isDrinkFavorite = false;
-			
-			$("#favoriteButton").on("click", function() {
-				favoriteDrink();
+			loadDrinks();
+		  	
+		  	$("#drinkInput").on("change", function() {
+				newDrink = $(this).val();
 			});
 			
-			function loadIngredients() {
-				 $.ajax({                                      
+			$("#typeInput").on("change", function() {
+				newType = $(this).val();
+			});
+			
+			$("#selectbasic").on("change", function () {
+				var e = document.getElementById("selectbasic");
+				_selectedValue = e.options[e.selectedIndex].value;
+			});
+			
+			$("#addIngredientButton").on("click", function() {
+				var d = document.getElementById("drinkInputGroup");
+				console.log("hi");
+				var button1 = document.createElement("input");
+				var button2 = document.createElement("input");
+				button1.placeholder = "Ingredient name";
+				button1.className = "ingredientInput";
+				button2.placeholder = "Ingredient quantity";
+				button2.className = "quantityInput";
+				d.appendChild(button1);
+				d.appendChild(button2);
+			});
+			
+			
+			$("#addDrinkButton").on("click", function(){
+				submitIngr();
+				submitDrink();
+			});
+			
+			function submitIngr() {
+				var ingredientArray = new Array(10);
+				var quantityArray = new Array(10);
+				$('.ingredientInput').each(function(i, obj) {
+					//console.log($(this).val());
+					ingredientArray[i] = $(this).val();
+				});
+				$('.quantityInput').each(function(i, obj) {
+					quantityArray[i] = $(this).val();
+				});
+				var actionType = "addIngredients";
+				$.ajax({                                      
 				  url: '../fn.php',                  
-				  data: "action=getIngredients&drink=" + getUrlVars()["drink"],
-				  dataType: 'json',
-				  success: function(data)
+				  data: {action: actionType, drink: newDrink, ingredients: ingredientArray, quantities: quantityArray}, 
+				  datatype: 'text',                          
+				 success: function(data)
 				  {
-					//console.log(data);
-					//data=JSON.parse(data);
-				  	$('#drinkIngredients').text("");
-				  	totable(data, "drinkIngredients");
+				  	console.log(data);
+					//$('#drinkList').text("");
+					//loadDrinks();
 				  },
 				  error: function (xhr, ajaxOptions, thrownError) {
-				        //alert(xhr.statusText);
-						console.log("action=getIngredients&drink=" + getUrlVars()["drink"]);
+				        alert(xhr.statusText);
+				        //alert(thrownError);
+				    }
+			  	});
+			}
+			
+			function submitDrink() {
+				var actionType = "addDrink";
+				$.ajax({                                      
+				  url: '../fn.php',                  
+				  data: {action: actionType, drink: newDrink, type: _selectedValue}, 
+				  datatype: 'text',                          
+				 success: function(data)
+				  {
+				  	console.log(data);
+					$('#drinkList').text("");
+					loadDrinks();
+				  },
+				  error: function (xhr, ajaxOptions, thrownError) {
+				        alert(xhr.statusText);
+				        //alert(thrownError);
+				    }
+			  	});
+			}
+			
+			function loadDrinks() {
+				 $.ajax({                                      
+				  url: '../fn.php',                  
+				  data: "action=getDrinks",                       
+				  dataType: 'json',     
+				  success: function(data)
+				  {
+				  	//console.log(data);
+					/*$.each(data, function(index,data) {        
+					    $('#drinkList').append(data.name+" - "+data.type + "<br>")
+					});*/
+					//data=JSON.parse(data);
+				  	$('#drinkList').text("");
+				  	totable(data);
+				  },
+				  error: function (xhr, ajaxOptions, thrownError) {
+				        alert(xhr.statusText);
 				        //alert(thrownError);
 				    } 
 			  	});
 		  	}
 			
-			function loadDescription() {
-				$.ajax({                                      
-					url: '../fn.php',                  
-					data: "action=getDescription&drink=" + getUrlVars()["drink"],                       
-					dataType: 'json',     
-					success: function(data)
-					{
-						//data=JSON.parse(data);
-						//console.log("action=getDescription&drink=" + getUrlVars()["drink"]);
-						$('#type').append(data[0]["Type"]);
-						$('#directions').append(data[0]["Directions"]);
-					},
-					error: function (xhr, ajaxOptions, thrownError) {
-						alert(xhr.statusText);
-						//alert(thrownError);
-					} 
-				});
-		  	}
-			
-			function favoriteDrink() {
-				var d = document.getElementById("favoriteIcon");
-				if(isDrinkFavorite) {
-					d.className = "glyphicon glyphicon-heart-empty";
-					updateFavorite();
-					isDrinkFavorite = false;
-				} else {
-					d.className = "glyphicon glyphicon-heart";
-					updateFavorite();
-					isDrinkFavorite = true;
-				}
-			}
-			
-			function checkFavorite() {
-				$.ajax({                                      
-					url: '../fn.php',                  
-					data: "action=isFavorite&user=oliver&drink=" + encodeURIComponent(getUrlVars()["drink"]),                       
-					dataType: 'text',     
-					success: function(data)
-					{
-						if(data === "a favorite") {
-							var d = document.getElementById("favoriteIcon");
-							d.className = "glyphicon glyphicon-heart";
-							isDrinkFavorite = true;
-						}
-					},
-					error: function (xhr, ajaxOptions, thrownError) {
-						alert(xhr.statusText);
-						//alert(thrownError);
-					} 
-				});
-			}
-			
-			function updateFavorite() {
-				$.ajax({                                      
-					url: '../fn.php',                  
-					data: "action=updateFavorite&user=" + getCookie("userID") + "&drink=" + encodeURIComponent(getUrlVars()["drink"]) + "&favStat=" + isDrinkFavorite,                       
-					dataType: 'text',     
-					success: function(data)
-					{
-						
-					},
-					error: function (xhr, ajaxOptions, thrownError) {
-						alert(xhr.statusText);
-						//alert(thrownError);
-					} 
-				});
-			}
-			
-			function totable(data, divToAttach){
-				var d = document.getElementById(divToAttach);
+			function totable(data){
+				var d = document.getElementById("drinkList");
 				d.setAttribute("class","panel panel-default");
 				var dd = document.createElement("div");
 				dd.setAttribute("class","panel-heading");
-				dd.appendChild(document.createTextNode("Drink Ingredients"));
+				dd.appendChild(document.createTextNode("Drink list"));
 				d.appendChild(dd);
 				var mytable = document.createElement("table");
 				mytable.setAttribute("class","table");
@@ -258,16 +279,17 @@
 				mytable.appendChild(thr);
 				for(var i=0;i<data.length;i++){
 					var r = document.createElement("tr");
-					var ingredientName = "" + data[i]["Ingredient"];
+					var drinkName = "" + data[i]["Name"];
+					//console.log(data[i]["Name"]);
 					for(var key in data[i]){
 						var td = document.createElement("td");
-						if(key == "Ingredient") {
-							$(td).on("click", { value : ingredientName }, function( event ) {
-								viewIngredientPrice(event.data.value);
+						if(key == "Name") {
+							$(td).on("click", { value : drinkName }, function( event ) {
+								viewDrink(event.data.value);
 							});
+						} else if(key == "Type") {
+							$(td).on("click", viewTag);
 						}
-						// else if(key == "type")
-							// $(td).on("click", viewTag);
 						td.appendChild(document.createTextNode(data[i][key]));
 						r.appendChild(td);
 					}
@@ -276,47 +298,20 @@
 				d.appendChild(mytable);
 			}
 			
-			function getUrlVars() {
-				var vars = {};
-				var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi,    
-				function(m,key,value) {
-					vars[key] = value;
-				});
-				return vars;
+			function viewDrink(drinkName) {
+				//console.log("../drinkDetailsPage/drinkDetails.php?drink=" + drinkName);
+				window.location.assign("../drinkDetailsPage/drinkDetails.php?drink=" + encodeURIComponent(drinkName));
 			}
 			
-			function viewIngredientPrice() {
+			function viewTag() {
 				console.log("click works");
-			}
-			function viewIngredientPrice(ingredientName) {
-				window.open("http://www.walmart.com/search/search-ng.do?search_query=" + ingredientName.replace(" ","+") + "&ic=16_0&Find=Find&search_constraint=976759");
-			}
-			
-			function getCookie(c_name) {
-				var c_value = document.cookie;
-				var c_start = c_value.indexOf(" " + c_name + "=");
-				if (c_start == -1) {
-					c_start = c_value.indexOf(c_name + "=");
-				}
-				if (c_start == -1) {
-					c_value = null;
-				} else {
-					c_start = c_value.indexOf("=", c_start) + 1;
-					var c_end = c_value.indexOf(";", c_start);
-					if (c_end == -1)
-					{
-						c_end = c_value.length;
-					}
-					c_value = unescape(c_value.substring(c_start,c_end));
-				}
-				return c_value;
 			}
 		  });
 	</script>
 				  	
 
       </div>
-
+	
     </div><!-- /.container -->
 
 

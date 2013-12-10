@@ -92,10 +92,10 @@
           <ul class="nav navbar-nav">
             <li><a href="../mixesPage/mixes.php">Mixes</a></li>
 			<li class="active"><a href="../aboutPage/about.php">About</a></li>
-            <li><a href="#contact">Profile</a></li>
+            <li><a href="../profile">Profile</a></li>
           </ul>
-		  <form class="navbar-form navbar-right">
-            <!--<div class="form-group">
+		  <!--<form class="navbar-form navbar-right">
+            <div class="form-group">
               <input type="text" placeholder="Email" class="form-control">
             </div>
             <div class="form-group">
