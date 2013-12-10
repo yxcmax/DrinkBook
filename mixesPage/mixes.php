@@ -63,8 +63,19 @@
       <div class="starter-template">
       <div class="well">
             <div id="drinkInputGroup" class="input-group">
-              <input type="text" class="form-control" id="drinkInput" placeholder="Drink Name"></input>
-              <input type="text" class="form-control" id="typeInput" placeholder="Drink Type"></input>
+				<input type="text" class="form-control" id="drinkInput" placeholder="Drink Name"></input>
+				<!--<input type="text" class="form-control" id="typeInput" placeholder="Drink Type"></input>-->
+				<select id="selectbasic" name="selectbasic" class="selectpicker">
+				  <option>Drink type select..</option>
+				  <option>Vodka</option>
+				  <option>Whisky</option>
+				  <option>Rum</option>
+				  <option>Gin</option>
+				  <option>Tequila</option>
+				  <option>Beer</option>
+				  <option>Wine</option>
+				  <option>Misc</option>
+				</select>
 			  <input type="text" class="ingredientInput" placeholder="Ingredient name"></input>
 			  <input type="text" class="quantityInput" placeholder="Ingredient quantity"></input>
               <span class="input-group-btn">
@@ -86,6 +97,11 @@
 			
 			$("#typeInput").on("change", function() {
 				newType = $(this).val();
+			});
+			
+			$("#selectbasic").on("change", function () {
+				var e = document.getElementById("selectbasic");
+				_selectedValue = e.options[e.selectedIndex].value;
 			});
 			
 			$("#addIngredientButton").on("click", function() {
@@ -139,7 +155,7 @@
 				var actionType = "addDrink";
 				$.ajax({                                      
 				  url: '../fn.php',                  
-				  data: {action: actionType, drink: newDrink, type: newType}, 
+				  data: {action: actionType, drink: newDrink, type: _selectedValue}, 
 				  datatype: 'text',                          
 				 success: function(data)
 				  {

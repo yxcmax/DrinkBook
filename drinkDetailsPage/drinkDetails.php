@@ -189,10 +189,14 @@
 				mytable.appendChild(thr);
 				for(var i=0;i<data.length;i++){
 					var r = document.createElement("tr");
+					var ingredientName = "" + data[i]["Ingredient"];
 					for(var key in data[i]){
 						var td = document.createElement("td");
-						// if(key == "name")
-							// $(td).on("click", viewDrink);
+						if(key == "Ingredient") {
+							$(td).on("click", { value : ingredientName }, function( event ) {
+								viewIngredientPrice(event.data.value);
+							});
+						}
 						// else if(key == "type")
 							// $(td).on("click", viewTag);
 						td.appendChild(document.createTextNode(data[i][key]));
@@ -214,6 +218,9 @@
 			
 			function viewIngredientPrice() {
 				console.log("click works");
+				
+			function viewIngredientPrice(ingredientName) {
+				window.open("http://www.walmart.com/search/search-ng.do?search_query=" + ingredientName.replace(" ","+") + "&ic=16_0&Find=Find&search_constraint=976759");
 			}
 			
 			function getCookie(c_name) {
