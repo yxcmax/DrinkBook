@@ -139,12 +139,15 @@
 	   <button type="button" id="favoriteButton" class="btn btn-default btn-lg">
 		  <span id="favoriteIcon" class="glyphicon glyphicon-heart-empty"></span> Favorite
 		</button>
+		<button type="button" id="drinkHistoryButton" class="btn btn-default btn-lg">
+		  <span id="favoriteIcon" class="glyphicon glyphicon-plus"></span> Add to my history
+		</button>
             
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script>
 		$(document).ready(function(){
 			loadIngredients();
-			//loadDescription();
+			loadDescription();
 			checkFavorite();
 			isDrinkFavorite = false;
 			
@@ -182,7 +185,10 @@
 						//data=JSON.parse(data);
 						//console.log("action=getDescription&drink=" + getUrlVars()["drink"]);
 						$('#type').append(data[0]["Type"]);
-						$('#directions').append(data[0]["Directions"]);
+						if(data[0]["Directions"] != "")
+							$('#directions').append(data[0]["Directions"]);
+						else
+							$('#directions').append("Mix ingredients in a glass");
 					},
 					error: function (xhr, ajaxOptions, thrownError) {
 						alert(xhr.statusText);

@@ -170,11 +170,12 @@
 		{
 		   //echo '<script>alert("connection has failed");</script>';
 		} else {
-			echo "SELECT type as Type, directions as Directions FROM Drink WHERE name =  '" . urldecode($drink) . "'";
+			//echo "SELECT type as Type, directions as Directions FROM Drink WHERE name =  '" . urldecode($drink) . "'";
 		   	$sql =  mysqli_query($con,"SELECT type as Type, directions as Directions FROM Drink WHERE name =  '" . urldecode($drink) . "'");
 			$results = array();
 			while($row = mysqli_fetch_array($sql))
 			{
+				//echo $row['Directions'];
 			   $results[] = array(
 			      'Type' => $row['Type'],
 			      'Directions' => $row['Directions']
