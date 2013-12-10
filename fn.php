@@ -13,8 +13,11 @@
 	case 'addFavorite':
 		addFavorite($_GET['drink']);
 		break;
-	case 'searchDrinksIngr':
-		searchDrinksByIngredients($_GET['drink']);
+	case 'searchDrinks':
+		searchDrinks($_GET['drink']);
+		break;
+	case 'searchIngredients':
+		searchDrinksByIngredients($_GET['ingredient']);
 		break;
 	case 'getIngredients':
 		getIngredients($_GET['drink']);
@@ -65,7 +68,7 @@
 			echo "fail";
 		   //echo '<script>alert("connection has failed");</script>';
 		}else{
-		   //echo '<script>alert("successful");</script>';
+			//echo '<script>alert("successful");</script>';
 			//echo "INSERT INTO Drink VALUES ('" . $drink . "','','" . $type . "','','";
 			$result= mysqli_query($con,"INSERT INTO Drink VALUES ('" . $drink . "','','" . $type . "','','')");
 			
@@ -137,7 +140,7 @@
 		{
 		   //echo '<script>alert("connection has failed");</script>';
 		} else { 
-		   	$sql =  mysqli_query($con,"select name, type from Drink inner join Ingredient on Drink.name=Ingredient.drinkName where Ingredient.ingredientName LIKE '%" . $ingr . "%'");
+		   	$sql =  mysqli_query($con,"select name as Name, type as Type from Drink inner join Ingredient on Drink.name=Ingredient.drinkName where Ingredient.ingredientName LIKE '%" . $ingr . "%'");
 			$results = array();
 			while($row = mysqli_fetch_array($sql))
 			{
@@ -145,6 +148,7 @@
 			      'Name' => $row['Name'],
 			      'Type' => $row['Type']
 			   );
+			   //$results[] = $row;
 			}
 			echo json_encode($results);
 		}

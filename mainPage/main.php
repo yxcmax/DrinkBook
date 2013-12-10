@@ -150,7 +150,8 @@
             <div class="input-group">
               <input type="text" class="form-control" id="searchInput" placeholder="Search for a drink">
               <span class="input-group-btn">
-                <button type="submit" class="btn btn-success" id="searchButton">DRINK!</button>
+                <button type="submit" class="btn btn-success" id="drinkSearchButton">Search by drink name</button>
+				<button type="submit" class="btn btn-success" id="ingredientSearchButton">Search by ingredients</button>
               </span>
             </div><!-- /input-group -->
             
@@ -226,11 +227,37 @@
 				   drinkSearchValue = this.value;
 			});
 				
-			$("#searchButton").on("click", function(){
+			$("#drinkSearchButton").on("click", function(){
 				var actionType = "searchDrinks";
 				$.ajax({                                      
 				  url: '../fn.php',                  
 				  data: {action: actionType, drink: drinkSearchValue}, 
+				  datatype: 'json',
+				 success: function(data)
+				  {
+				  	console.log(data);
+				  	data=JSON.parse(data);
+				  	$('#searchResults').text("");
+				  	totable(data);
+				  	/*
+				  	//$('#searchResults').append(data[0].name + " - " + data[0].type);
+				  	$.each(data, function(index,data) {        
+					    $('#searchResults').append(data.name+" - "+data.type + "<br>");
+					});
+					*/
+				  },
+				  error: function (xhr, ajaxOptions, thrownError) {
+				        alert(xhr.statusText);
+				        //alert(thrownError);
+				    }
+			  	});
+			});
+			
+			$("#ingredientSearchButton").on("click", function(){
+				var actionType = "searchIngredients";
+				$.ajax({                                      
+				  url: '../fn.php',                  
+				  data: {action: actionType, ingredient: drinkSearchValue}, 
 				  datatype: 'json',
 				 success: function(data)
 				  {
