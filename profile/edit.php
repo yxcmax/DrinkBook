@@ -82,7 +82,7 @@
           <div class="form-group">
             <label for="inputName" class="col-sm-2 control-label">Name</label>
             <div class="col-sm-6">
-              <input name="name" type="text" class="form-control" id="inputName" placeholder="Your Name">
+              <input name="name" type="text" class="form-control" id="inputName" placeholder="Your Name" value="'.$name.'">
             </div>
             <div style="color:red" id="namewar"></div>
           </div>
@@ -90,7 +90,7 @@
           <div class="form-group">
             <label for="inputEmail" class="col-sm-2 control-label">Email</label>
             <div class="col-sm-6">
-              <input name="email" type="email" class="form-control" id="inputEmail" placeholder="Your Email">
+              <input name="email" type="email" class="form-control" id="inputEmail" placeholder="Your Email" value="'.$email.'">
             </div>
             <div style="color:red" id="emailwar"></div>
           </div>

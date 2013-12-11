@@ -1,4 +1,8 @@
 <?php
+  if(!isset($_COOKIE['userID'])){
+    echo 'This page is not supposed to be used like this.';
+    exit();
+  }
   $con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
   $user=$_COOKIE["userID"];
   $types=array("Vodka", "Beer", "Tequila", "Whiskey", "Rum", "Gin", "Wine", "Brandy", "Misc");
@@ -30,31 +34,15 @@
       $best=$result;
     }
   }
-  echo $winner."<br>";
-  print_r($results);
+  $result = mysqli_query($con, "SELECT * from Drink where type = '$winner' and name NOT in (select drinkName from History where userID = '$user')");
+  if(mysqli_num_rows($result)==0)
+    $result = mysqli_query($con, "SELECT * from Drink where type = '$winner'");
+  $num_rows = mysqli_num_rows($result);
+  $results = array();
+  while($row = mysqli_fetch_assoc($result)){
+    $results[]=$row;
+  }
+  srand(mktime(0, 0, 0));
+  $drink_idx = rand(0, $num_rows-1);
+  $recom = $results[$drink_idx]['name'];
 ?>
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Test</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap -->
-    <link href="mainPage/bootstrap.css" rel="stylesheet">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <h1>Hello, world!</h1>
-    
-
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="mainPage/bootstrap.js"></script>
-  </body>
-</html>
