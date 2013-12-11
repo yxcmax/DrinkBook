@@ -134,10 +134,6 @@
         <p class="lead">We are	the	social drink experts. We are here to help you connect with friends while you enjoy a drink or two. We are the drink	connoisseur. Indulge your taste	buds in tastefully selected drinks and mixes. <br> Try new ﬂavors and meet new people.</p>
 	  </div>
 	  
-	  <div class="container">
-          <!-- Embedded Google Map using an iframe - to select your location find it on Google maps and paste the link as the iframe src. If you want to use the Google Maps API instead then have at it! -->
-          <iframe width="100%" height="400px" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?hl=en&amp;ie=UTF8&amp;ll=37.0625,-95.677068&amp;spn=150.506174,79.013672&amp;t=m&amp;z=4&amp;output=embed"></iframe>
-	  </div>
 
     </div><!-- /.container -->
 

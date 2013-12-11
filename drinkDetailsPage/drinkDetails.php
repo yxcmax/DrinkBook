@@ -312,6 +312,8 @@
 				console.log("click works");
 			}
 			function viewIngredientPrice(ingredientName) {
+				event.preventDefault();
+				window.open("http://www.amazon.com/s/ref=nb_sb_noss_1?url=search-alias%3Dgrocery&field-keywords=" + ingredientName.replace(" ","+"));
 				window.open("http://www.walmart.com/search/search-ng.do?search_query=" + ingredientName.replace(" ","+") + "&ic=16_0&Find=Find&search_constraint=976759");
 			}
 			

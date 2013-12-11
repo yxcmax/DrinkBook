@@ -141,6 +141,7 @@
                                   <option>Rum</option>
                                   <option>Gin</option>
                                   <option>Tequila</option>
+								  <option>Brandy</option>
                                   <option>Beer</option>
                                   <option>Wine</option>
                                   <option>Misc</option>
