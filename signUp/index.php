@@ -28,7 +28,7 @@
               </div>
             </body>
     ';
-    header('Refresh: 3;url=signup.php');
+    header('Refresh: 3;url=../mainPage/main.php');
   }else{
     echo '
 

@@ -1,5 +1,6 @@
 <!-- The login implementation -->
 <?php
+  $quote="'";
   if(isset($_GET['logout'])) 
   {
     $expire = time()-60*60*24;
@@ -49,13 +50,17 @@
     $con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
     $profile = mysqli_query($con, "select * from Profile inner join Drinker on Profile.UID = Drinker.idNum where Drinker.userID = '$userID'");
     echo mysqli_error($con);
-    $name;
-    $email;
+    $name="";
+    $email="";
     while($newrow = mysqli_fetch_assoc($profile)){
       $name=$newrow['Name'];
       $email=$newrow['Email'];
     }
-    $qhist = mysqli_query($con, "select date, drinkName, quantity from History where userID='$userID' order by date");
+    if($email==""){
+      $email="You haven't updated your email yet.";
+    }
+
+    $qhist = mysqli_query($con, "select date, drinkName from History where userID='$userID' order by date");
     $hist = array();
     while($row = mysqli_fetch_assoc($qhist)){
       $hist[]=$row;
@@ -65,6 +70,12 @@
     while($row = mysqli_fetch_assoc($qrate)){
       $rate[]=$row;
     }
+    $qfavor = mysqli_query($con, "select drinkName from Favorite where userID = '$userID'");
+    $favor = array();
+    while($row = mysqli_fetch_assoc($qfavor)){
+      $favor[]=$row;
+    }
+    include 'recommend.php';
   }
 ?>
 <!-- The login implementation -->
@@ -128,7 +139,10 @@
 
 	<div class="container" style="padding-top:10px;">
 
+<div class="alert alert-warning fade in"><a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a><strong>Click on any drinks to see more options!</strong></div>
+
           <div class="well">
+
             <h2>Profile<?php if(isset($userID)){
               echo ' - '.$userID;
             }
@@ -137,14 +151,24 @@
 
             <?php
               if(isset($userID)){
-                echo '<a type="button" class="btn btn-primary" href="edit.php">Edit</a><br>
+                echo '<div class="row">
+                        <div class="col-md-4 col-md-offset-4"><h4 class="text-primary text-center">We thought you'.$quote.'d like:</h4></div>
+                        <div class="col-md-4 col-md-offset-4"><h4 class="text-success text-center" onclick="viewDrink('.$quote.$recom.$quote.')">'.$recom.'</h4></div>
+                      </div>
+                      <a type="button" class="btn btn-primary" href="edit.php">Edit</a><br>
                       <label style="padding-top: 5px;">Name: </label><p>'.$name.'</p>
                       <label>Email: </label><p>'.$email.'</p>
                       <label>Drink History</label>
                       <div id="myhistory"></div>
                       <div id="histpager"></div>
+                      <br>
                       <label>My Ratings</label>
                       <div id="myrating"></div>
+                      <div id="ratepager"></div>
+                      <br>
+                      <label>My Favorites</label>
+                      <div id="myfavor"></div>
+                      <div id="favorpager"></div>
                       ';
               }
               //print_r($hist);
@@ -152,6 +176,43 @@
             ?>
 
           </div>
+
+<!-- Testing stuff in here!!!!!-->
+
+<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+  Launch demo modal
+</button>
+
+
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 id="ratingTitle" class="modal-title">Rate a Drink</h4>
+      </div>
+      <div class="modal-body">
+        <input type="number" max="5" min="0" class="form-control" id="rateDrink" placeholder="3" autocomplete="off">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="myrate()">Rate!</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+
+
+
+
+
+<!--Testing area ends-->
+
+
 
 
           <!-- <button type="button" class="btn btn-default" onclick="alert('tell me')" -->
@@ -185,7 +246,7 @@
         <div class="col-md-4">
           <h2>Profile</h2>
           <p>About you</p>
-          <p><a class="btn btn-default" href="date.php" role="button">View details &raquo;</a></p>
+          <p><a class="btn btn-default" href="./index.php" role="button">View details &raquo;</a></p>
         </div>
       <!-- </div> -->
 
@@ -198,15 +259,16 @@
     
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script>
+    var drink_to_rate ="";
 	
 		function totable(data,target){
 			var table_container = document.getElementById(target);
       table_container.innerHTML="";
 			table_container.setAttribute("class","panel panel-default");
-			var table_heading = document.createElement("div");
-			table_heading.setAttribute("class","panel-heading");
-			table_heading.appendChild(document.createTextNode("Search results"));
-			table_container.appendChild(table_heading);
+			//var table_heading = document.createElement("div");
+			//table_heading.setAttribute("class","panel-heading");
+			//table_heading.appendChild(document.createTextNode("Search results"));
+			//table_container.appendChild(table_heading);
 			var mytable = document.createElement("table");
 			mytable.setAttribute("class","table");
       var thead = document.createElement("thead");
@@ -224,13 +286,125 @@
 				var t_body_row = document.createElement("tr");
 				for(var key in data[i]){
 					var td = document.createElement("td");
+          //Click to go to details page
+          if(key=="drinkName"/*This string depends on queries*/){
+            td.appendChild(mynode(data[i][key]));
+          }else{
 					td.appendChild(document.createTextNode(data[i][key]));
+          }
 					t_body_row.appendChild(td);
 				}
 				tbody.appendChild(t_body_row);
 			}
 			table_container.appendChild(mytable);
 		}
+
+    function totable_wrapper(data, target, pager, max_entries){
+      var length = data.length;
+      //alert(data.length);
+      if(length==0){
+        document.getElementById(target).appendChild(document.createElement("p").appendChild(document.createTextNode("No results can be displayed.")));
+        return;
+      }
+      var num_pages = Math.ceil(length/max_entries);
+      totable(data.slice(0,max_entries),target);
+      var btn_group = document.createElement("div");
+      btn_group.setAttribute("class", "btn-group");
+      var pager_obj = document.getElementById(pager);
+      pager_obj.appendChild(btn_group);
+      for(var i=0;i<num_pages;i++){
+        var page_btn = document.createElement("button");
+        page_btn.setAttribute("class", "btn btn-default");
+        //page_btn.setAttribute("onclick", "totable("+data+".slice("+(i*max_entries)+","+((i+1)*max_entries)+"), '"+target+"');");
+        $(page_btn).on("click",{data : data, itr : i},function(e){
+          //alert(e.data.itr);
+          var i=e.data.itr;
+          var data=e.data.data;
+          totable(data.slice(i*max_entries,(i+1)*max_entries), target);
+        });
+        page_btn.appendChild(document.createTextNode(i+1));
+        btn_group.appendChild(page_btn);
+      }
+    }
+
+    function myrate(){
+      var user_rate = document.getElementById("rateDrink").value;
+      if(user_rate<0 || user_rate>5)
+        alert("nope");
+      $.post("rate.php",{'drinkName':drink_to_rate,'rating':user_rate},function(data){
+        if(data=="successful")
+          alert("successful");
+        else
+          alert("went wrong");
+        $("#myModal").modal("hide");
+        location.reload();
+      });
+    }
+
+    function mynode(drinkName){
+      //<div>
+      var dpdown = document.createElement("div");
+      dpdown.setAttribute("class","dropdown");
+      //<a>
+      var link = document.createElement("a");
+      link.setAttribute("id",drinkName);
+      link.setAttribute("role","button");
+      link.setAttribute("data-toggle","dropdown");
+      link.setAttribute("data-target","#");
+      link.setAttribute("href","./");
+      link.appendChild(document.createTextNode(drinkName));
+      //<ul>
+      var menu = document.createElement("ul");
+      menu.setAttribute("class","dropdown-menu");
+      menu.setAttribute("role","menu");
+      menu.setAttribute("aria-labelledby",drinkName);
+      //<li>s
+      var detail = document.createElement("li");
+      var detail_link = document.createElement("a");
+      detail_link.setAttribute("onclick","viewDrink('"+drinkName+"')");
+      detail_link.appendChild(document.createTextNode("View details"));
+      detail.appendChild(detail_link);
+      var rate = document.createElement("li");
+      var rate_link = document.createElement("a");
+      rate_link.setAttribute("data-toggle","modal");
+      rate_link.setAttribute("data-target","#myModal");
+      rate_link.appendChild(document.createTextNode("Rate this drink"));
+      $(rate_link).on("click",{value:drinkName},function(e){
+        $("#ratingTitle").html("Rate "+drinkName);
+        drink_to_rate=drinkName;
+        $.post("rate.php",{'drinkName':drinkName},function(data){
+          document.getElementById("rateDrink").setAttribute("value",data);
+        });
+      });
+      rate.appendChild(rate_link);
+
+      menu.appendChild(detail);
+      menu.appendChild(rate);
+      dpdown.appendChild(link);
+      dpdown.appendChild(menu);
+
+      return dpdown;
+
+
+
+
+            /*
+            <div class="dropdown">
+              <a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/page.html">
+                this drink
+              </a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li>abc</li>
+                <li>123</li>
+              </ul>
+            </div>
+            */
+    }
+
+    function viewDrink(drinkName) {
+    //console.log("../drinkDetailsPage/drinkDetails.php?drink=" + drinkName);
+    window.location.assign("../drinkDetailsPage/drinkDetails.php?drink=" + encodeURIComponent(drinkName));
+    }
 	
 		$(document).ready(function(){
       var drinkSearchValue="";
@@ -279,14 +453,21 @@
 
 
     <script type="text/javascript">
-      var dhist = <?php echo json_encode($hist);?>;
-      var rating= <?php echo json_encode($rate);?>;
+      var dhist = <?php if(count($hist)>0) echo json_encode($hist);else echo '[]';?>;
+      var rating = <?php if(count($rate)>0) echo json_encode($rate);else echo '[]';?>;
+      var dfavor = <?php if(count($favor)>0) echo json_encode($favor);else echo '[]';?>;
       $( document ).ready(function() {
         //alert("haha");
-        totable(dhist,"myhistory");
-        totable(rating,"myrating");
+        //totable(dhist,"myhistory");
+        //totable(rating,"myrating");
+        var test = [];
+        totable_wrapper(dhist,"myhistory","histpager",4);
+        totable_wrapper(rating,"myrating","ratepager",4);
+        totable_wrapper(dfavor,"myfavor","favorpager",4);
+        //document.getElementById("itest").appendChild(mynode("Vodka Tonic"));
+        //totable_wrapper(dhist,null,null);
         //Pagination
-        $('#histpager').html('<div class="btn-group"><button type="button" class="btn btn-default" onclick="totable(dhist.slice(0,2),&#39;myhistory&#39);">1</button><button type="button" class="btn btn-default">2</button></div>');
+        //$('#histpager').html('<div class="btn-group"><button type="button" class="btn btn-default" onclick="totable(dhist.slice(0,2),&#39;myhistory&#39);">1</button><button type="button" class="btn btn-default">2</button></div>');
       });
     </script>
   </body>
