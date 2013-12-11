@@ -8,7 +8,13 @@
   $drink=$_POST["drinkName"];
   if(isset($_POST['rating'])){
   	$rating=$_POST['rating'];
-  	$query = "UPDATE Rating set rating = '$rating' where userID='$user' and drinkName='$drink'";
+	$check = "SELECT rating from Rating where userID='$user' and drinkName='$drink'";
+	$result = mysqli_query($con, $check);
+	if(mysqli_num_rows($result)==0){
+		$query="insert into Rating (userID,drinkName,rating) values('$user','$drink',$rating)";
+	}
+	else
+		$query = "UPDATE Rating set rating = '$rating' where userID='$user' and drinkName='$drink'";
   	$result = mysqli_query($con, $query);
   	if(!$result){
   		echo "shit went wrong!";

@@ -179,10 +179,6 @@
 
 <!-- Testing stuff in here!!!!!-->
 
-<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-  Launch demo modal
-</button>
-
 
 <div class="modal fade" id="myModal">
   <div class="modal-dialog">
@@ -192,7 +188,7 @@
         <h4 id="ratingTitle" class="modal-title">Rate a Drink</h4>
       </div>
       <div class="modal-body">
-        <input type="number" max="5" min="0" class="form-control" id="rateDrink" placeholder="3" autocomplete="off">
+        <input type="number" max="5" min="0" class="form-control" id="rateDrink" value="3" autocomplete="off">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -329,6 +325,8 @@
 
     function myrate(){
       var user_rate = document.getElementById("rateDrink").value;
+	  //alert(user_rate);
+	  //return;
       if(user_rate<0 || user_rate>5)
         alert("nope");
       $.post("rate.php",{'drinkName':drink_to_rate,'rating':user_rate},function(data){
@@ -373,6 +371,7 @@
         $("#ratingTitle").html("Rate "+drinkName);
         drink_to_rate=drinkName;
         $.post("rate.php",{'drinkName':drinkName},function(data){
+			if(data!="")
           document.getElementById("rateDrink").setAttribute("value",data);
         });
       });
