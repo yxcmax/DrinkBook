@@ -49,13 +49,17 @@
     $con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
     $profile = mysqli_query($con, "select * from Profile inner join Drinker on Profile.UID = Drinker.idNum where Drinker.userID = '$userID'");
     echo mysqli_error($con);
-    $name;
-    $email;
+    $name="";
+    $email="";
     while($newrow = mysqli_fetch_assoc($profile)){
       $name=$newrow['Name'];
       $email=$newrow['Email'];
     }
-    $qhist = mysqli_query($con, "select date, drinkName, quantity from History where userID='$userID' order by date");
+    if($email==""){
+      $email="You haven't updated your email yet.";
+    }
+
+    $qhist = mysqli_query($con, "select date, drinkName from History where userID='$userID' order by date");
     $hist = array();
     while($row = mysqli_fetch_assoc($qhist)){
       $hist[]=$row;
@@ -64,6 +68,11 @@
     $qrate = mysqli_query($con, "select drinkName, rating from Rating where userID='$userID' order by rating DESC");
     while($row = mysqli_fetch_assoc($qrate)){
       $rate[]=$row;
+    }
+    $qfavor = mysqli_query($con, "select drinkName from Favorite where userID = '$userID'");
+    $favor = array();
+    while($row = mysqli_fetch_assoc($qfavor)){
+      $favor[]=$row;
     }
   }
 ?>
@@ -143,8 +152,14 @@
                       <label>Drink History</label>
                       <div id="myhistory"></div>
                       <div id="histpager"></div>
+                      <br>
                       <label>My Ratings</label>
                       <div id="myrating"></div>
+                      <div id="ratepager"></div>
+                      <br>
+                      <label>My Favorites</label>
+                      <div id="myfavor"></div>
+                      <div id="favorpager"></div>
                       ';
               }
               //print_r($hist);
@@ -185,7 +200,7 @@
         <div class="col-md-4">
           <h2>Profile</h2>
           <p>About you</p>
-          <p><a class="btn btn-default" href="date.php" role="button">View details &raquo;</a></p>
+          <p><a class="btn btn-default" href="./index.php" role="button">View details &raquo;</a></p>
         </div>
       <!-- </div> -->
 
@@ -203,10 +218,10 @@
 			var table_container = document.getElementById(target);
       table_container.innerHTML="";
 			table_container.setAttribute("class","panel panel-default");
-			var table_heading = document.createElement("div");
-			table_heading.setAttribute("class","panel-heading");
-			table_heading.appendChild(document.createTextNode("Search results"));
-			table_container.appendChild(table_heading);
+			//var table_heading = document.createElement("div");
+			//table_heading.setAttribute("class","panel-heading");
+			//table_heading.appendChild(document.createTextNode("Search results"));
+			//table_container.appendChild(table_heading);
 			var mytable = document.createElement("table");
 			mytable.setAttribute("class","table");
       var thead = document.createElement("thead");
@@ -231,6 +246,34 @@
 			}
 			table_container.appendChild(mytable);
 		}
+
+    function totable_wrapper(data, target, pager, max_entries){
+      var length = data.length;
+      //alert(data.length);
+      if(length==0){
+        document.getElementById(target).appendChild(document.createElement("p").appendChild(document.createTextNode("No results can be displayed.")));
+        return;
+      }
+      var num_pages = Math.ceil(length/max_entries);
+      totable(data.slice(0,max_entries),target);
+      var btn_group = document.createElement("div");
+      btn_group.setAttribute("class", "btn-group");
+      var pager_obj = document.getElementById(pager);
+      pager_obj.appendChild(btn_group);
+      for(var i=0;i<num_pages;i++){
+        var page_btn = document.createElement("button");
+        page_btn.setAttribute("class", "btn btn-default");
+        //page_btn.setAttribute("onclick", "totable("+data+".slice("+(i*max_entries)+","+((i+1)*max_entries)+"), '"+target+"');");
+        $(page_btn).on("click",{data : data, itr : i},function(e){
+          //alert(e.data.itr);
+          var i=e.data.itr;
+          var data=e.data.data;
+          totable(data.slice(i*max_entries,(i+1)*max_entries), target);
+        });
+        page_btn.appendChild(document.createTextNode(i+1));
+        btn_group.appendChild(page_btn);
+      }
+    }
 	
 		$(document).ready(function(){
       var drinkSearchValue="";
@@ -279,14 +322,20 @@
 
 
     <script type="text/javascript">
-      var dhist = <?php echo json_encode($hist);?>;
-      var rating= <?php echo json_encode($rate);?>;
+      var dhist = <?php if(count($hist)>0) echo json_encode($hist);else echo '[]';?>;
+      var rating = <?php if(count($rate)>0) echo json_encode($rate);else echo '[]';?>;
+      var dfavor = <?php if(count($favor)>0) echo json_encode($favor);else echo '[]';?>;
       $( document ).ready(function() {
         //alert("haha");
-        totable(dhist,"myhistory");
-        totable(rating,"myrating");
+        //totable(dhist,"myhistory");
+        //totable(rating,"myrating");
+        var test = [];
+        totable_wrapper(dhist,"myhistory","histpager",4);
+        totable_wrapper(rating,"myrating","ratepager",4);
+        totable_wrapper(dfavor,"myfavor","favorpager",4);
+        //totable_wrapper(dhist,null,null);
         //Pagination
-        $('#histpager').html('<div class="btn-group"><button type="button" class="btn btn-default" onclick="totable(dhist.slice(0,2),&#39;myhistory&#39);">1</button><button type="button" class="btn btn-default">2</button></div>');
+        //$('#histpager').html('<div class="btn-group"><button type="button" class="btn btn-default" onclick="totable(dhist.slice(0,2),&#39;myhistory&#39);">1</button><button type="button" class="btn btn-default">2</button></div>');
       });
     </script>
   </body>

@@ -6,6 +6,10 @@
 	    header('Refresh: 3;url=signup.php');
 	    exit();
 	}
+	$checkpass=0;
+	if(isset($_POST['pass'])){
+		$checkpass=1;
+	}
 
 	$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
 
@@ -13,9 +17,18 @@
 
 	$result = mysqli_query($con, "SELECT * FROM `Drinker` where `userID` = '$user'");
 
-	if (mysqli_num_rows($result) >0){
-		echo 'exist';
+	if($checkpass){
+		$row = mysqli_fetch_assoc($result);
+		if($row['password']!=$_POST['pass']){
+			echo 'notmatch';
+		}else{
+			echo 'match';
+		}
 	}else{
-		echo 'notexist';
+		if (mysqli_num_rows($result) >0){
+			echo 'exist';
+		}else{
+			echo 'notexist';
+		}
 	}
 ?>

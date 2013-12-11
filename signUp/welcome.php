@@ -12,9 +12,15 @@
 	$pass = $_POST['pass'];
 
 	$result = mysqli_query($con, "INSERT INTO Drinker (userID, password) VALUES ('$user','$pass')");
+  $UID = mysqli_query($con, "SELECT idNum FROM Drinker where userID = '$user'");
+  $therow = mysqli_fetch_assoc($UID);
+  $UID = $therow['idNum'];
+  $result = mysqli_query($con, "INSERT INTO Profile (UID) VALUES ('$UID')");
 	if($result==false){
 		echo 'something went wrong';
 	}else{
+    $expire = time() + 60*60*24; //1 day
+    setcookie('userID', $user, $expire, '/');
 		echo'
 
 
@@ -46,6 +52,6 @@
 
 
 		";
-		header('Refresh: 5;url=signup.php');
+		header('Refresh: 5;url=../Profile');
 	}
 ?>
