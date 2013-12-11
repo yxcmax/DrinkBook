@@ -73,7 +73,7 @@
 		}else{
 			//echo '<script>alert("successful");</script>';
 			//echo "INSERT INTO Drink VALUES ('" . $drink . "','','" . $type . "','','";
-			$result= mysqli_query($con,"INSERT INTO Drink VALUES ('" . $drink . "','','" . $type . "','','')");
+			$result= mysqli_query($con,"INSERT INTO Drink VALUES ('" . urldecode($drink) . "','','" . urldecode($type) . "','','')");
 			
 			if ( false===$result ) {
 			  //echo mysqli_error($con);
@@ -95,8 +95,7 @@
 		   //echo '<script>alert("successful");</script>';
 		   
 			for($i = 0, $size = count($ingrArray); $i < $size; $i++) {
-				echo "INSERT INTO Ingredient VALUES ('" . $drink . "','" . $ingrArray[$i] . "','" . $quantArray[$i] . "')";
-				$result= mysqli_query($con,"INSERT INTO Ingredient VALUES ('" . $drink . "','" . $ingrArray[$i] . "','" . $quantArray[$i] . "')");
+				$result= mysqli_query($con,"INSERT INTO Ingredient VALUES ('" . urldecode($drink) . "','" . urldecode($ingrArray[$i]) . "','" . urldecode($quantArray[$i]) . "')");
 			}
 			if ( false===$result ) {
 			  //echo mysqli_error($con);
@@ -114,7 +113,7 @@
 		{
 		   //echo '<script>alert("connection has failed");</script>';
 		} else { 
-		   	$sql =  mysqli_query($con,"SELECT * FROM Drink WHERE name LIKE '%" . $drink . "%'");
+		   	$sql =  mysqli_query($con,"SELECT * FROM Drink WHERE name LIKE '%" . urldecode($drink) . "%'");
 		   	if (!$sql) {
 			    printf("Error: %s\n", mysqli_error($con));
 			    exit();
@@ -134,7 +133,7 @@
 		{
 		   //echo '<script>alert("connection has failed");</script>';
 		} else { 
-		   	$sql =  mysqli_query($con,"select name as Name, type as Type from Drink inner join Ingredient on Drink.name=Ingredient.drinkName where Ingredient.ingredientName LIKE '%" . $ingr . "%'");
+		   	$sql =  mysqli_query($con,"select name as Name, type as Type from Drink inner join Ingredient on Drink.name=Ingredient.drinkName where Ingredient.ingredientName LIKE '%" . urldecode($ingr) . "%'");
 			$results = array();
 			while($row = mysqli_fetch_array($sql))
 			{
@@ -154,7 +153,7 @@
 		{
 		   echo '<script>alert("connection has failed");</script>';
 		} else { 
-		   	$sql =  mysqli_query($con,"SELECT ingredientName as Ingredient, quantity as Quantity FROM Ingredient WHERE drinkName =  '" . $drink . "'");
+		   	$sql =  mysqli_query($con,"SELECT ingredientName as Ingredient, quantity as Quantity FROM Ingredient WHERE drinkName =  '" . urldecode($drink) . "'");
 			$results = array();
 			while($row = mysqli_fetch_array($sql))
 			{
@@ -195,7 +194,7 @@
 		   //echo '<script>alert("connection has failed");</script>';
 		} else {
 			//echo "SELECT * from Favorite where userID = '" . $user . "' and drinkName = '" . urldecode($drink) . "'\n";
-		   	$sql =  mysqli_query($con,"SELECT * from Favorite where userID = '" . $user . "' and drinkName = '" . urldecode($drink) . "'");
+		   	$sql =  mysqli_query($con,"SELECT * from Favorite where userID = '" . urldecode($user) . "' and drinkName = '" . urldecode($drink) . "'");
 			//echo $sql;
 			if( mysqli_num_rows($sql) != 0)
 				echo "a favorite";
@@ -212,11 +211,9 @@
 		} else {
 			echo $favStat . "\n";
 			if($favStat == "true") { // true meaning is already a favorite, so remove as a favorite
-				echo "DELETE FROM Favorite WHERE userID= '" . $user . "' and drinkName='" . urldecode($drink) . "'\n";
-				$result =  mysqli_query($con,"DELETE FROM Favorite WHERE userID= '" . $user . "' and drinkName='" . urldecode($drink) . "'");
+				$result =  mysqli_query($con,"DELETE FROM Favorite WHERE userID= '" . urldecode($user) . "' and drinkName='" . urldecode($drink) . "'");
 			} else { //add as a favorite
-				echo "INSERT INTO Favorite VALUES ('','" . $user . "','" . urldecode($drink) . "')\n";
-				$result =  mysqli_query($con,"INSERT INTO Favorite VALUES ('','" . $user . "','" . urldecode($drink) . "')");
+				$result =  mysqli_query($con,"INSERT INTO Favorite VALUES ('','" . urldecode($user) . "','" . urldecode($drink) . "')");
 			}
 			
 			echo $result;
@@ -236,14 +233,12 @@
 		{
 		   //echo '<script>alert("connection has failed");</script>';
 		} else {
-		   	$result =  mysqli_query($con,"INSERT INTO History VALUES ('','" . $user . "','" . urldecode($drink) . "','" . date("Y-m-d") . "','')");
-			
+		   	$result =  mysqli_query($con,"INSERT INTO History VALUES ('','" . urldecode($user) . "','" . urldecode($drink) . "','" . date("Y-m-d") . "')");
 			if ( false===$result ) {
 			  echo mysqli_error($con);
 			}
 			else {
 			  echo 'success';
 			}
-			
 		}
 	}

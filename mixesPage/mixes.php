@@ -147,11 +147,15 @@
                                 </select>
                           <input type="text" class="ingredientInput" placeholder="Ingredient name"></input>
                           <input type="text" class="quantityInput" placeholder="Ingredient quantity"></input>
-              <span class="input-group-btn">
-                <button type="submit" id="addDrinkButton" class="btn btn-success">Add a drink!</button>
-                                <button type="submit" id="addIngredientButton" class="btn btn-success">Add an Ingredient!</button>
-              </span>
-       </div>
+              
+			</div>
+			<div id="drinkSubmitButtons" class="input-group">
+				<span class="input-group-btn">
+					<button type="submit" id="addDrinkButton" class="btn btn-success">Add a drink!</button>
+					<button type="submit" id="addIngredientButton" class="btn btn-success">Add an Ingredient!</button>
+				</span>
+			  </div>
+	
        
        <div id="drinkList"></div>
             
@@ -197,27 +201,28 @@
                                 var quantityArray = new Array(10);
                                 $('.ingredientInput').each(function(i, obj) {
                                         //console.log($(this).val());
-                                        ingredientArray[i] = $(this).val();
+										if($(this).val() != "")
+											ingredientArray[i] = $(this).val();
                                 });
                                 $('.quantityInput').each(function(i, obj) {
-                                        quantityArray[i] = $(this).val();
+										if($(this).val() != "")
+											quantityArray[i] = $(this).val();
                                 });
                                 var actionType = "addIngredients";
-                                $.ajax({                                      
-                                  url: '../fn.php',                  
-                                  data: {action: actionType, drink: newDrink, ingredients: ingredientArray, quantities: quantityArray}, 
-                                  datatype: 'text',                          
-                                 success: function(data)
-                                  {
-                                          console.log(data);
-                                        //$('#drinkList').text("");
-                                        //loadDrinks();
-                                  },
-                                  error: function (xhr, ajaxOptions, thrownError) {
-                                        alert(xhr.statusText);
-                                        //alert(thrownError);
-                                    }
-                                  });
+                                $.ajax({
+									url: '../fn.php',                  
+									data: {action: actionType, drink: newDrink, ingredients: ingredientArray, quantities: quantityArray}, 
+									datatype: 'text',                          
+									success: function(data)
+									{
+										//console.log(data);
+										//$('#drinkList').text("");
+									},
+									error: function (xhr, ajaxOptions, thrownError) {
+										alert("ingredient " + xhr.statusText);
+										//alert(thrownError);
+									}
+                                });
                         }
                         
                         function submitDrink() {
@@ -228,12 +233,13 @@
                                   datatype: 'text',                          
                                  success: function(data)
                                   {
-                                          console.log(data);
-                                        $('#drinkList').text("");
-                                        loadDrinks();
+                                        //console.log(data);
+                                        //$('#drinkList').text("");
+                                        //loadDrinks();
+										location.reload();
                                   },
                                   error: function (xhr, ajaxOptions, thrownError) {
-                                        alert(xhr.statusText);
+                                        alert("drink  " + xhr.statusText);
                                         //alert(thrownError);
                                     }
                                   });

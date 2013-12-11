@@ -148,7 +148,7 @@
           <div class="well">
             <h4>Lets Get Weird!</h4>
             <div class="input-group">
-              <input type="text" class="form-control" id="searchInput" placeholder="Search for a drink">
+              <input type="text" class="form-control" id="searchInput" placeholder="Search">
               <span class="input-group-btn">
                 <button type="submit" class="btn btn-success" id="drinkSearchButton">Search by drink name</button>
 				<button type="submit" class="btn btn-success" id="ingredientSearchButton">Search by ingredients</button>
