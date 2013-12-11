@@ -129,34 +129,40 @@
 
     <div class="container">
 
-      <div class="starter-template">
-      <div class="well">
-            <div id="drinkInputGroup" class="input-group">
-                                <input type="text" class="form-control" id="drinkInput" placeholder="Drink Name"></input>
-                                <!--<input type="text" class="form-control" id="typeInput" placeholder="Drink Type"></input>-->
-                                <select id="selectbasic" name="selectbasic" class="selectpicker">
-                                  <option>Drink type select..</option>
-                                  <option>Vodka</option>
-                                  <option>Whisky</option>
-                                  <option>Rum</option>
-                                  <option>Gin</option>
-                                  <option>Tequila</option>
-								  <option>Brandy</option>
-                                  <option>Beer</option>
-                                  <option>Wine</option>
-                                  <option>Misc</option>
-                                </select>
-                          <input type="text" class="ingredientInput" placeholder="Ingredient name"></input>
-                          <input type="text" class="quantityInput" placeholder="Ingredient quantity"></input>
-              
-			</div>
-			<div id="drinkSubmitButtons" class="input-group">
-				<span class="input-group-btn">
-					<button type="submit" id="addDrinkButton" class="btn btn-success">Add a drink!</button>
-					<button type="submit" id="addIngredientButton" class="btn btn-success">Add an Ingredient!</button>
-				</span>
-			  </div>
-	
+	<div class="starter-template">
+	<div class="well">
+            <form id="drinkInputGroup" class="form-horizontal">
+				<div id="jkjfjd" class="input-group-horizontal">
+					<input type="text" id="drinkInput" placeholder="Drink Name"></input>
+					<!--<input type="text" class="form-control" id="typeInput" placeholder="Drink Type"></input>-->
+					<select id="selectbasic" name="selectbasic" class="selectpicker">
+						<option>Drink type select..</option>
+						<option>Vodka</option>
+						<option>Whisky</option>
+						<option>Rum</option>
+						<option>Gin</option>
+						<option>Tequila</option>
+						<option>Brandy</option>
+						<option>Beer</option>
+						<option>Wine</option>
+						<option>Misc</option>
+					</select>
+				</div>
+				<div id="ingrInput" class="input-group-vertical">
+					<div class="input-group-horizontal">
+						<input type="text" class="ingredientInput" placeholder="Ingredient name"></input>
+						<input type="text" class="quantityInput" placeholder="Ingredient quantity"></input>
+					</div>
+				</div>
+			</form>
+			<form id="drinkSubmitGroup" class="form-horizontal">
+				<div id="drinkSubmitButtons" class="input-group">
+					<span class="input-group-btn-vertical">
+						<button type="submit" id="addDrinkButton" class="btn btn-success">Add a drink!</button>
+						<button type="button" id="addIngredientButton" class="btn btn-success">Add an Ingredient!</button>
+					</span>
+				</div>
+			</form>
        
        <div id="drinkList"></div>
             
@@ -179,16 +185,18 @@
                         });
                         
                         $("#addIngredientButton").on("click", function() {
-                                var d = document.getElementById("drinkInputGroup");
-                                console.log("hi");
+                                var d = document.getElementById("ingrInput");
+								var div = document.createElement("div");
+								div.className = "input-group-horizontal";
                                 var button1 = document.createElement("input");
                                 var button2 = document.createElement("input");
                                 button1.placeholder = "Ingredient name";
                                 button1.className = "ingredientInput";
                                 button2.placeholder = "Ingredient quantity";
                                 button2.className = "quantityInput";
-                                d.appendChild(button1);
-                                d.appendChild(button2);
+								d.appendChild(div);
+                                div.appendChild(button1);
+                                div.appendChild(button2);
                         });
                         
                         
