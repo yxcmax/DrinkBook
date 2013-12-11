@@ -155,10 +155,27 @@
 				favoriteDrink();
 			});
 			
+			$("#drinkHistoryButton").on("click", function() {
+				$.ajax({                                      
+				  url: '../fn.php',                  
+				  data: "action=addToHistory&user=" + getCookie("userID") + "&drink=" + encodeURIComponent(getUrlVars()["drink"]),
+				  dataType: 'text',
+				  success: function(data)
+				  {
+					$("#drinkHistoryButton").text(" Added to your history!");
+				  },
+				  error: function (xhr, ajaxOptions, thrownError) {
+				        //alert(xhr.statusText);
+						console.log("action=getIngredients&drink=" + getUrlVars()["drink"]);
+				        //alert(thrownError);
+				    } 
+			  	});
+			});
+			
 			function loadIngredients() {
 				 $.ajax({                                      
 				  url: '../fn.php',                  
-				  data: "action=getIngredients&drink=" + getUrlVars()["drink"],
+				  data: "action=getIngredients&drink=" + encodeURIComponent(getUrlVars()["drink"]),
 				  dataType: 'json',
 				  success: function(data)
 				  {
@@ -178,7 +195,7 @@
 			function loadDescription() {
 				$.ajax({                                      
 					url: '../fn.php',                  
-					data: "action=getDescription&drink=" + getUrlVars()["drink"],                       
+					data: "action=getDescription&drink=" + encodeURIComponent(getUrlVars()["drink"]),                       
 					dataType: 'json',     
 					success: function(data)
 					{

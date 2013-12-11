@@ -31,6 +31,9 @@
 	case 'updateFavorite':
 		updateFavorite($_GET['user'], $_GET['drink'], $_GET['favStat']);
 		break;
+	case 'addToHistory': 
+		addToHistory($_GET['user'], $_GET['drink']);
+		break;
 	default:
 	}
 
@@ -202,7 +205,7 @@
 	}
 	
 	function updateFavorite($user, $drink, $favStat) {
-				$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+		$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
 		if (mysqli_connect_errno($con))
 		{
 		   //echo '<script>alert("connection has failed");</script>';
@@ -224,5 +227,23 @@
 			else {
 			  echo 'success';
 			}
+		}
+	}
+	
+	function addToHistory($user, $drink) {
+		$con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
+		if (mysqli_connect_errno($con))
+		{
+		   //echo '<script>alert("connection has failed");</script>';
+		} else {
+		   	$result =  mysqli_query($con,"INSERT INTO History VALUES ('','" . $user . "','" . urldecode($drink) . "','" . date("Y-m-d") . "','')");
+			
+			if ( false===$result ) {
+			  echo mysqli_error($con);
+			}
+			else {
+			  echo 'success';
+			}
+			
 		}
 	}
