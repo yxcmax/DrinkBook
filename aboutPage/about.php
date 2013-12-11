@@ -131,7 +131,7 @@
 
       <div class="starter-template">
         <h1>About Us</h1>
-        <p class="lead">We are	the	social drink experts. We are here to help you connect with friends while you enjoy a drink or two. We are the drink	connoisseur. Indulge your taste	buds in tastefully selected drinks and mixes. <br> Try new ﬂavors and meet new people.</p>
+        <p class="lead">We are the drink connoisseur. Indulge your taste buds in tastefully selected drinks and mixes.</p>
 	  </div>
 	  
 
