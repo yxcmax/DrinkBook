@@ -5,7 +5,7 @@
     $expire = time()-60*60*24;
     setcookie('userID', " ", $expire, '/');
     unset($_COOKIE['userID']);
-    header('Location: main.php');
+    header('Location: ../aboutPage/about.php');
     exit();
   }
 

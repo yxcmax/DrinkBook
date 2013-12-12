@@ -5,7 +5,7 @@
     $expire = time()-60*60*24;
     setcookie('userID', " ", $expire, '/');
     unset($_COOKIE['userID']);
-    header('Location: main.php');
+    header('Location: ../mixesPage/mixes.php');
     exit();
   }
 
@@ -26,7 +26,7 @@
         $expire = time() + 60*60*24; //1 day
         setcookie('userID', $row['userID'], $expire, '/');
         //$userID = $row['userID'];
-        header('Location: main.php');
+        header('Location: ../mixesPage/mixes.php');
         exit();
       }
     }

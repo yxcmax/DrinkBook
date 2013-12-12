@@ -113,7 +113,7 @@
 		{
 		   //echo '<script>alert("connection has failed");</script>';
 		} else { 
-		   	$sql =  mysqli_query($con,"SELECT * FROM Drink WHERE name LIKE '%" . urldecode($drink) . "%'");
+		   	$sql =  mysqli_query($con,"SELECT name as Name, type as Type FROM Drink WHERE name LIKE '%" . urldecode($drink) . "%'");
 		   	if (!$sql) {
 			    printf("Error: %s\n", mysqli_error($con));
 			    exit();

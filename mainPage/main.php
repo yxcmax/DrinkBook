@@ -156,8 +156,51 @@
             </div><!-- /input-group -->
             
             <div id="searchResults"></div>
+			<div id="searchPager"></div>
 
 
+			
+			
+			
+			
+			
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 id="ratingTitle" class="modal-title">Rate a Drink</h4>
+      </div>
+      <div class="modal-body">
+        <input type="number" max="5" min="0" class="form-control" id="rateDrink" value="3" autocomplete="off">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="myrate()">Rate!</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 
       <!-- Example row of columns -->
       <div class="row">
@@ -188,6 +231,194 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script>
 	
+	    var drink_to_rate ="";
+	
+		function totable(data,target){
+			var table_container = document.getElementById(target);
+      table_container.innerHTML="";
+			table_container.setAttribute("class","panel panel-default");
+			//var table_heading = document.createElement("div");
+			//table_heading.setAttribute("class","panel-heading");
+			//table_heading.appendChild(document.createTextNode("Search results"));
+			//table_container.appendChild(table_heading);
+			var mytable = document.createElement("table");
+			mytable.setAttribute("class","table");
+      var thead = document.createElement("thead");
+      var tbody = document.createElement("tbody");
+      mytable.appendChild(thead);
+      mytable.appendChild(tbody);
+			var t_header_row = document.createElement("tr");
+			for(var key in data[0]){
+				var th = document.createElement("th");
+				th.appendChild(document.createTextNode(key));
+				t_header_row.appendChild(th);
+			}
+			thead.appendChild(t_header_row);
+			for(var i=0;i<data.length;i++){
+				var t_body_row = document.createElement("tr");
+				for(var key in data[i]){
+					var td = document.createElement("td");
+          //Click to go to details page
+          if(key=="Name"/*This string depends on queries*/){
+            td.appendChild(mynode(data[i][key]));
+          }else{
+					td.appendChild(document.createTextNode(data[i][key]));
+          }
+					t_body_row.appendChild(td);
+				}
+				tbody.appendChild(t_body_row);
+			}
+			table_container.appendChild(mytable);
+		}
+
+    function totable_wrapper(data, target, pager, max_entries){
+      var length = data.length;
+      //alert(data.length);
+      if(length==0){
+        document.getElementById(target).appendChild(document.createElement("p").appendChild(document.createTextNode("No results can be displayed.")));
+        return;
+      }
+	  document.getElementById(pager	).innerHTML="";
+      var num_pages = Math.ceil(length/max_entries);
+      totable(data.slice(0,max_entries),target);
+      var btn_group = document.createElement("div");
+      btn_group.setAttribute("class", "btn-group");
+      var pager_obj = document.getElementById(pager);
+      pager_obj.appendChild(btn_group);
+      for(var i=0;i<num_pages;i++){
+        var page_btn = document.createElement("button");
+        page_btn.setAttribute("class", "btn btn-default");
+        //page_btn.setAttribute("onclick", "totable("+data+".slice("+(i*max_entries)+","+((i+1)*max_entries)+"), '"+target+"');");
+        $(page_btn).on("click",{data : data, itr : i},function(e){
+          //alert(e.data.itr);
+          var i=e.data.itr;
+          var data=e.data.data;
+          totable(data.slice(i*max_entries,(i+1)*max_entries), target);
+        });
+        page_btn.appendChild(document.createTextNode(i+1));
+        btn_group.appendChild(page_btn);
+      }
+    }
+
+    function myrate(){
+      var user_rate = document.getElementById("rateDrink").value;
+	  //alert(user_rate);
+	  //return;
+      if(user_rate<0 || user_rate>5)
+        alert("nope");
+      $.post("../profile/rate.php",{'drinkName':drink_to_rate,'rating':user_rate},function(data){
+        if(data=="successful")
+          alert("successful");
+        else
+          alert("went wrong");
+        $("#myModal").modal("hide");
+        location.reload();
+      });
+    }
+
+    function mynode(drinkName){
+      //<div>
+      var dpdown = document.createElement("div");
+      dpdown.setAttribute("class","dropdown");
+      //<a>
+      var link = document.createElement("a");
+      link.setAttribute("id",drinkName);
+      link.setAttribute("role","button");
+      link.setAttribute("data-toggle","dropdown");
+      link.setAttribute("data-target","#");
+      link.setAttribute("href","./");
+      link.appendChild(document.createTextNode(drinkName));
+      //<ul>
+      var menu = document.createElement("ul");
+      menu.setAttribute("class","dropdown-menu");
+      menu.setAttribute("role","menu");
+      menu.setAttribute("aria-labelledby",drinkName);
+      //<li>s
+      var detail = document.createElement("li");
+      var detail_link = document.createElement("a");
+      detail_link.setAttribute("onclick","viewDrink('"+drinkName+"')");
+      detail_link.appendChild(document.createTextNode("View details"));
+      detail.appendChild(detail_link);
+      var rate = document.createElement("li");
+      var rate_link = document.createElement("a");
+      rate_link.setAttribute("data-toggle","modal");
+      rate_link.setAttribute("data-target","#myModal");
+      rate_link.appendChild(document.createTextNode("Rate this drink"));
+      $(rate_link).on("click",{value:drinkName},function(e){
+        $("#ratingTitle").html("Rate "+drinkName);
+        drink_to_rate=drinkName;
+        $.post("../profile/rate.php",{'drinkName':drinkName},function(data){
+			if(data!="")
+          document.getElementById("rateDrink").setAttribute("value",data);
+        });
+      });
+      rate.appendChild(rate_link);
+
+      menu.appendChild(detail);
+      menu.appendChild(rate);
+      dpdown.appendChild(link);
+      dpdown.appendChild(menu);
+
+      return dpdown;
+
+
+
+
+            /*
+            <div class="dropdown">
+              <a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/page.html">
+                this drink
+              </a>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                <li>abc</li>
+                <li>123</li>
+              </ul>
+            </div>
+            */
+    }
+
+    function viewDrink(drinkName) {
+    //console.log("../drinkDetailsPage/drinkDetails.php?drink=" + drinkName);
+    window.location.assign("../drinkDetailsPage/drinkDetails.php?drink=" + encodeURIComponent(drinkName));
+    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
 		function totable(data){
 			var d = document.getElementById("searchResults");
 			d.setAttribute("class","panel panel-default");
@@ -219,7 +450,7 @@
 			}
 			d.appendChild(mytable);
 		}
-	
+	*/
 		$(document).ready(function(){
       var drinkSearchValue="";
 		
@@ -238,7 +469,7 @@
 				  	console.log(data);
 				  	data=JSON.parse(data);
 				  	$('#searchResults').text("");
-				  	totable(data);
+				  	totable_wrapper(data,"searchResults","searchPager",10);
 				  	/*
 				  	//$('#searchResults').append(data[0].name + " - " + data[0].type);
 				  	$.each(data, function(index,data) {        
@@ -264,7 +495,7 @@
 				  	console.log(data);
 				  	data=JSON.parse(data);
 				  	$('#searchResults').text("");
-				  	totable(data);
+				  	totable_wrapper(data,"searchResults","searchPager",10);
 				  	/*
 				  	//$('#searchResults').append(data[0].name + " - " + data[0].type);
 				  	$.each(data, function(index,data) {        

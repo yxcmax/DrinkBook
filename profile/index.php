@@ -18,7 +18,8 @@
     //connect to data base 
     $con=mysqli_connect("engr-cpanel-mysql.engr.illinois.edu","socialdrinkers_b","testing123","socialdrinkers_db");
     
-    $result = mysqli_query($con, "SELECT * FROM `Drinker` where `userID` = '$user' AND `password` = '$pass'");
+    $result = mysqli_query($con, "SELECT * FROM `Drinker` where `userID` 
+	= '$user' AND `password` = '$pass'");
     echo mysqli_error($con);
     if (mysqli_num_rows($result) >0)
     { // correct info
